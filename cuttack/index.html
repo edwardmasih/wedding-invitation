@@ -134,6 +134,21 @@ body.locked{overflow:hidden;position:fixed;width:100%;height:100%}
   .glimpse-current{width:58vw;max-width:248px}
   .glimpse-side{width:13vw;max-width:56px}
 }
+/* fun questions */
+#fun{max-width:none;background:linear-gradient(180deg,#fbf5ee 0%,#f7ecdf 100%)}
+#fun h2{max-width:320px;margin:0 auto 16px;color:#8f4c68;line-height:1.12;font-size:1.9rem}
+.fun-intro{max-width:none;margin:0 auto 28px;color:rgba(60,49,42,.72);font-size:.82rem;white-space:nowrap}
+.fun-grid{display:grid;gap:16px}
+.fun-card{margin:0;padding:20px 18px;border-radius:24px;background:rgba(255,250,244,.88);border:1px solid rgba(168,132,77,.18);box-shadow:0 18px 36px rgba(69,48,33,.08);text-align:left;min-width:0;transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease}
+.fun-card.missing{border-color:#c24b7d;box-shadow:0 18px 40px rgba(194,75,125,.18);animation:fun-bounce .48s ease 2}
+.fun-question-title{margin:0;font-family:"Cormorant Garamond",serif;font-size:1.22rem;line-height:1.2;color:#5c4033}
+.fun-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.fun-option{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.72);cursor:pointer}
+.fun-option input{width:auto;margin:0;accent-color:#c24b7d}
+.fun-option-copy{font-size:.95rem;color:#4f3b31}
+.fun-note{margin:18px 0 0;font-size:.82rem;color:rgba(92,64,51,.75)}
+@keyframes fun-bounce{0%,100%{transform:translateY(0)}35%{transform:translateY(-8px)}65%{transform:translateY(4px)}}
+@media(min-width:560px){.fun-grid{grid-template-columns:1fr 1fr}}
 /* location */
 .map{width:100%;height:280px;border:1px solid var(--line);border-radius:6px;margin-top:20px}
 .btn{display:inline-block;margin-top:16px;padding:11px 26px;border:1px solid var(--gold);color:var(--gold);text-decoration:none;border-radius:40px;background:none;font:inherit;cursor:pointer}
@@ -144,14 +159,20 @@ body.locked{overflow:hidden;position:fixed;width:100%;height:100%}
 .card{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:26px 20px}
 .card h3{font-size:1.5rem;color:var(--gold);margin-bottom:8px}
 /* rsvp */
+#rsvp{max-width:none;background:linear-gradient(180deg,#fbf4ec 0%,#f7e7db 100%)}
+#rsvp h2{color:#8f4c68}
+#rsvp .rsvp-question{margin:0;font-size:.9rem;line-height:1.6;color:inherit;font-family:inherit;font-weight:inherit}
 form{display:grid;gap:14px;text-align:left;margin-top:22px}
 label{font-size:.9rem}
-input,textarea,select{width:100%;padding:11px 12px;font:inherit;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:4px}
-input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--gold)}
+input,textarea,select{width:100%;padding:11px 12px;font:inherit;background:rgba(255,244,237,.92);color:#5c4033;border:1px solid rgba(143,76,104,.22);border-radius:14px}
+input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid #c24b7d}
 .radio{display:flex;gap:18px;flex-wrap:wrap}.radio label{display:flex;gap:6px;align-items:center}.radio input{width:auto}
+#rsvp .btn{border-color:#c24b7d;background:#c24b7d;color:#fff7f4}
+#rsvp .btn:hover,#rsvp .btn:focus-visible{background:#a93b68;color:#fff7f4}
 #done{display:none;margin-top:22px;padding:20px;border:1px solid var(--gold);border-radius:6px}
-footer{padding:60px 24px;background:var(--green);color:#f6f1e7}
-footer h2{color:#e0c490;margin-bottom:6px}
+footer{padding:60px 24px;background:linear-gradient(rgba(212,130,159,.72),rgba(188,90,128,.82)),url("./static/last_bg.png") center/cover no-repeat;color:#fff7fb}
+footer .footer-photo{display:block;width:min(100%,260px);margin:0 auto 24px;border-radius:28px;box-shadow:0 24px 48px rgba(106,36,69,.28)}
+footer h2{color:#fff1d8;margin-bottom:6px}
 #music{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:5;width:44px;height:44px;border-radius:50%;border:1px solid var(--gold);background:var(--card);color:var(--gold);cursor:pointer;display:none}
 @media(prefers-reduced-motion:reduce){#cover{transition:none}html{scroll-behavior:auto}.scroll .chevrons,.scroll .chevrons span{animation:none;opacity:1}}
 @media(min-width:768px){#count{min-height:auto}}
@@ -274,26 +295,61 @@ footer h2{color:#e0c490;margin-bottom:6px}
     </div>
   </section>
 
-  <section>
+  <section id="fun">
+    <h2>A few fun questions before the big day!</h2>
+    <p class="fun-intro">Just for smiles, guesses, and a little pre-wedding gossip.</p>
+    <div class="fun-grid">
+      <div class="fun-card fun-question" data-name="fun1" data-question="Predict their married life in one word:" role="radiogroup" aria-label="Predict their married life in one word:">
+        <p class="fun-question-title">Predict their married life in one word:</p>
+        <div class="fun-options">
+          <label class="fun-option"><input type="radio" name="fun1" value="Romantic" form="form" required><span class="fun-option-copy">Romantic</span></label>
+          <label class="fun-option"><input type="radio" name="fun1" value="Chaotic" form="form"><span class="fun-option-copy">Chaotic</span></label>
+          <label class="fun-option"><input type="radio" name="fun1" value="Sleepy" form="form"><span class="fun-option-copy">Sleepy</span></label>
+          <label class="fun-option"><input type="radio" name="fun1" value="Foodie" form="form"><span class="fun-option-copy">Foodie</span></label>
+        </div>
+      </div>
+      <div class="fun-card fun-question" data-name="fun2" data-question="What is the REAL reason you’re attending?" role="radiogroup" aria-label="What is the REAL reason you’re attending?">
+        <p class="fun-question-title">What is the REAL reason you’re attending?</p>
+        <div class="fun-options">
+          <label class="fun-option"><input type="radio" name="fun2" value="To bless the couple" form="form" required><span class="fun-option-copy">To bless the couple</span></label>
+          <label class="fun-option"><input type="radio" name="fun2" value="For the dance" form="form"><span class="fun-option-copy">For the dance</span></label>
+          <label class="fun-option"><input type="radio" name="fun2" value="For the food" form="form"><span class="fun-option-copy">For the food</span></label>
+          <label class="fun-option"><input type="radio" name="fun2" value="To witness the drama" form="form"><span class="fun-option-copy">To witness the drama</span></label>
+        </div>
+      </div>
+      <div class="fun-card fun-question" data-name="fun3" data-question="What would you wish for Selina & Edward?" role="radiogroup" aria-label="What would you wish for Selina & Edward?">
+        <p class="fun-question-title">What would you wish for Selina & Edward?</p>
+        <div class="fun-options">
+          <label class="fun-option"><input type="radio" name="fun3" value="A lifetime of love" form="form" required><span class="fun-option-copy">A lifetime of love</span></label>
+          <label class="fun-option"><input type="radio" name="fun3" value="A marriage rooted in faith" form="form"><span class="fun-option-copy">A marriage rooted in faith</span></label>
+          <label class="fun-option"><input type="radio" name="fun3" value="A home filled with happiness" form="form"><span class="fun-option-copy">A home filled with happiness</span></label>
+          <label class="fun-option"><input type="radio" name="fun3" value="All of the above" form="form"><span class="fun-option-copy">All of the above</span></label>
+        </div>
+      </div>
+    </div>
+    <p class="fun-note">Note: answering the questions is mandatory.</p>
+  </section>
+
+  <section id="rsvp">
     <h2>Confirm Your Attendance</h2>
     <p id="rsvpIntro"></p>
     <form id="form">
       <label>Your name<input name="name" required></label>
-      <div class="radio" role="radiogroup" aria-label="Will you be attending?">
-        <label><input type="radio" name="att" value="Accepts with pleasure" required> Accepts with pleasure</label>
-        <label><input type="radio" name="att" value="Declines with regret"> Declines with regret</label>
+      <p class="rsvp-question">Are you coming to witness the "I do"?</p>
+      <div class="radio" role="radiogroup" aria-label="Are you coming to witness the I do?">
+        <label><input type="radio" name="att" value="Of course! Wouldn't miss it ❤️" required> Of course! Wouldn't miss it ❤️</label>
+        <label><input type="radio" name="att" value="Sadly, I won't be able to make it 🤍"> Sadly, I won't be able to make it 🤍</label>
       </div>
-      <label>Number of guests attending<input name="guests" type="number" min="1" max="20" value="1"></label>
-      <label>A song that gets you dancing<input name="song"></label>
-      <label>Children attending (names and ages)<textarea name="kids" rows="2"></textarea></label>
+      <label>A note for the couple<textarea name="note" rows="4"></textarea></label>
       <button class="btn" type="submit">Submit RSVP</button>
     </form>
     <div id="done"></div>
   </section>
 
   <footer>
+    <img class="footer-photo" src="../photos/love.png" alt="Selina and Edward">
     <h2>Hope to see you there!</h2>
-    <div class="amp" id="foot" style="color:#f6f1e7"></div>
+    <div class="amp" id="foot" style="color:#fff7fb"></div>
   </footer>
 </div>
 
@@ -316,7 +372,7 @@ const CFG = {
     { name: "Reception", date: "27.11.26", time: "7pm onwards", address: "Officers' Association B.S.P.- Pragati Bhawan, Civic Center, Sector 6, Bhilai, Chhattisgarh 490006", mapLink: "https://maps.app.goo.gl/5GL6YX9SFwK1peZL8", photo: "./static/reception.png" }
   ],
   galleryPhotos: Array.from({ length: 10 }, (_, index) => `../photos/${index + 1}.png`),
-  rsvpIntro: "To help us prepare for a joyful celebration, kindly confirm your attendance.",
+  rsvpIntro: "Because every great wedding needs its favourite people.",
   rsvpWhatsApp: "919993562067",                 // e.g. "15165551234" (digits only) to receive RSVPs by WhatsApp
   rsvpEmail: "",                    // or an email address to receive RSVPs
   musicUrl: ""                      // direct link to an .mp3 file
@@ -330,7 +386,7 @@ $("dateText").textContent=CFG.dateText;$("quote").textContent=CFG.quote;$("verse
 $("sched").innerHTML=CFG.celebrations.map((event,i)=>`<button class="schedule-card" type="button" data-index="${i}" data-row="${i===4?3:(i>1?2:1)}"><div class="schedule-photo"></div><div class="schedule-card-body"><div class="schedule-kicker">Tap to view</div></div></button>`).join("");
 [...$("sched").children].forEach((card,i)=>{card.querySelector(".schedule-photo").style.backgroundImage=`linear-gradient(rgba(18,28,22,.1),rgba(18,28,22,.1)),url(${CFG.celebrations[i].photo})`});
 $("rsvpIntro").textContent=CFG.rsvpIntro;
-$("foot").textContent=CFG.name1+" and "+CFG.name2;
+$("foot").textContent="Selina & Edward";
 
 /* schedule cards */
 (function(){
@@ -403,10 +459,11 @@ $("foot").textContent=CFG.name1+" and "+CFG.name2;
 (function(){
   const photos=CFG.galleryPhotos||[];
   if(!photos.length)return;
+  const section=$("glimpse");
   const prevImg=$("glimpsePrevImage"),currentImg=$("glimpseCurrentImage"),nextImg=$("glimpseNextImage");
   const prevBtn=$("glimpsePrev"),nextBtn=$("glimpseNext"),dots=$("glimpseDots"),count=$("glimpseCount"),stage=$("glimpseStage");
   const reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;
-  let index=0,auto=0,startX=null;
+  let index=0,auto=0,startX=null,visible=false;
   const mod=value=>(value+photos.length)%photos.length;
   dots.innerHTML=photos.map((_,i)=>`<button class="glimpse-dot${i===0?" active":""}" type="button" data-index="${i}" aria-label="Show photo ${i+1}"></button>`).join("");
   const dotButtons=[...dots.children];
@@ -449,6 +506,18 @@ $("foot").textContent=CFG.name1+" and "+CFG.name2;
     move(delta<0?1:-1);
   });
   stage.addEventListener("pointerleave",()=>{startX=null;});
+  new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting&&!visible){
+        visible=true;
+        index=0;
+        render();
+        queueAuto();
+      }else if(!entry.isIntersecting){
+        visible=false;
+      }
+    });
+  },{threshold:.65}).observe(section);
   render();
   queueAuto();
 })();
@@ -648,10 +717,50 @@ mb.addEventListener("click",()=>audio.paused?audio.play():audio.pause());
 })();
 
 /* rsvp */
+const funSection=$("fun"),rsvpSection=$("rsvp");
+(function(){
+  const reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;
+  const questions=[...document.querySelectorAll(".fun-question")];
+  let lastY=window.scrollY,correcting=false;
+  const unanswered=()=>questions.filter(card=>!document.querySelector(`input[name="${card.dataset.name}"]:checked`));
+  function bounce(cards=unanswered()){
+    cards.forEach(card=>{
+      card.classList.remove("missing");
+      void card.offsetWidth;
+      card.classList.add("missing");
+    });
+  }
+  function validate(){
+    const missing=unanswered();
+    if(!missing.length)return true;
+    bounce(missing);
+    missing[0].scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"});
+    return false;
+  }
+  questions.forEach(card=>card.addEventListener("change",()=>card.classList.remove("missing")));
+  addEventListener("scroll",()=>{
+    const currentY=window.scrollY;
+    const goingDown=currentY>lastY;
+    lastY=currentY;
+    if(correcting||!goingDown)return;
+    const missing=unanswered();
+    if(!missing.length)return;
+    if(funSection.getBoundingClientRect().top<innerHeight*.55&&rsvpSection.getBoundingClientRect().top<innerHeight*.92){
+      correcting=true;
+      bounce(missing);
+      funSection.scrollIntoView({behavior:reduce?"auto":"smooth",block:"start"});
+      setTimeout(()=>{correcting=false},550);
+    }
+  },{passive:true});
+  window.validateFunQuestions=validate;
+})();
+
 $("form").addEventListener("submit",e=>{
   e.preventDefault();
+  if(!window.validateFunQuestions())return;
   const f=new FormData(e.target);
-  const msg=`RSVP – ${CFG.title}\nName: ${f.get("name")}\nAttending: ${f.get("att")}\nGuests: ${f.get("guests")}\nSong: ${f.get("song")||"-"}\nChildren: ${f.get("kids")||"-"}`;
+  const funAnswers=[...document.querySelectorAll(".fun-question")].map(card=>`${card.dataset.question}: ${f.get(card.dataset.name)||"-"}`).join("\n");
+  const msg=`RSVP – ${CFG.title}\nName: ${f.get("name")}\nAttending: ${f.get("att")}\nNote for the couple: ${f.get("note")||"-"}\n\nFun Questions\n${funAnswers}`;
   const out=$("done");out.style.display="block";
   out.textContent="Thank you! Your response is ready to send.";
   let link="";
