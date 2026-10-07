@@ -90,7 +90,10 @@ footer h2{color:#e0c490;margin-bottom:6px}
 #music{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:5;width:44px;height:44px;border-radius:50%;border:1px solid var(--gold);background:var(--card);color:var(--gold);cursor:pointer;display:none}
 @media(prefers-reduced-motion:reduce){#cover{transition:none}html{scroll-behavior:auto}.scroll .chevrons,.scroll .chevrons span{animation:none;opacity:1}}
 @media(min-width:768px){#count{min-height:auto}}
-@media(max-width:767px){html{scroll-snap-type:y mandatory}#hero,#count{scroll-snap-align:start;scroll-snap-stop:always}}
+@media(max-width:767px){
+  html{scroll-snap-type:y mandatory}
+  .phone-shell>section,.phone-shell>footer{scroll-snap-align:start;scroll-snap-stop:always;min-height:100vh;min-height:100svh;display:flex;flex-direction:column;justify-content:center}
+}
 </style>
 </head>
 <body class="locked">
