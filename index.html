@@ -33,7 +33,9 @@ body.locked{overflow:hidden;position:fixed;width:100%;height:100%}
 /* hero */
 #hero{min-height:100vh;min-height:100svh;display:flex;flex-direction:column;justify-content:center;align-items:center;max-width:none;background:linear-gradient(var(--bg),var(--card))}
 #hero .small{letter-spacing:.2em;font-size:.85rem}
-#hero h1{font-size:clamp(3rem,13vw,5.5rem);line-height:1.05;margin:10px 0}
+#hero h1{font-size:clamp(3rem,13vw,5.5rem);line-height:.88;margin:10px 0;display:flex;flex-direction:column;align-items:center;gap:4px}
+#hero h1 span{display:block}
+#hero h1 .amp{font-size:.55em;line-height:1;margin:-.12em 0 -.1em}
 .hw{position:relative;width:280px;height:240px;margin:18px auto 6px;filter:drop-shadow(0 8px 16px rgba(168,132,77,.4))}
 #sparkle{position:absolute;left:-40px;top:-40px;width:360px;height:320px;pointer-events:none}
 .heart{position:relative;width:280px;height:240px;clip-path:path("M140 235 C40 160 0 110 0 70 C0 30 30 0 70 0 C100 0 125 18 140 45 C155 18 180 0 210 0 C250 0 280 30 280 70 C280 110 240 160 140 235 Z");background:var(--card)}
@@ -98,7 +100,7 @@ footer h2{color:#e0c490;margin-bottom:6px}
 
   <section id="hero">
     <div class="small">WEDDING DAY</div>
-    <h1><span id="n1"></span><br><span class="amp">&amp;</span><br><span id="n2"></span></h1>
+    <h1><span id="n1"></span><span class="amp">&amp;</span><span id="n2"></span></h1>
     <div class="hw"><div class="heart"><div class="reveal"><small>SAVE THE DATE</small><span id="dateText"></span></div><canvas id="scratch" width="280" height="240"></canvas></div><canvas id="sparkle" width="360" height="320"></canvas></div>
     <p class="hint" id="hint">Scratch the heart to reveal the date</p>
     <div class="quote-wrap">
@@ -174,7 +176,7 @@ const CFG = {
   dateISO: "2026-11-25T17:00:00",   // wedding date + start time (local)
   dateText: "25.11.26",
   quote: "Two Souls · One destiny",
-  verse: '"So they are no longer two, but one flesh. 9 Therefore what God has joined together, let no one separate."<span class="verse-ref">Mark 10:8-9</span>',
+  verse: '"So they are no longer two, but one flesh. Therefore what God has joined together, let no one separate."<span class="verse-ref">Mark 10:8-9</span>',
   events: [
     ["Guest Arrival", "5 PM"],
     ["Nikkah Ceremony", "6 PM"],
