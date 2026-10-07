@@ -93,6 +93,10 @@ body.locked{overflow:hidden;position:fixed;width:100%;height:100%}
 .schedule-modal-content{padding:24px 22px 26px;text-align:left}
 .schedule-meta{display:grid;gap:14px}
 .schedule-meta-block{padding:14px 16px;border-radius:18px;background:#f6efe1}
+.schedule-map-link{display:block;color:inherit;text-decoration:none;transition:transform .25s ease,box-shadow .25s ease}
+.schedule-map-link:hover,.schedule-map-link:focus-visible{transform:translateY(-2px);box-shadow:0 12px 28px rgba(43,58,48,.12);outline:none}
+.schedule-map-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px}
+.schedule-map-icon{width:24px;height:24px;flex:0 0 auto}
 .schedule-meta-label{display:block;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(43,58,48,.55);margin-bottom:6px}
 .schedule-meta-value{font-family:"Cormorant Garamond",serif;font-size:1.35rem;color:var(--green)}
 .schedule-meta-copy{font-size:.96rem;color:rgba(43,58,48,.84)}
@@ -190,10 +194,18 @@ footer h2{color:#e0c490;margin-bottom:6px}
               <span class="schedule-meta-label">Time</span>
               <div class="schedule-meta-value" id="scheduleModalTime"></div>
             </div>
-            <div class="schedule-meta-block">
-              <span class="schedule-meta-label">Address</span>
+            <a class="schedule-meta-block schedule-map-link" id="scheduleModalAddressLink" target="_blank" rel="noopener">
+              <div class="schedule-map-head">
+                <span class="schedule-meta-label">Address</span>
+                <svg class="schedule-map-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path fill="#34A853" d="M12 2c-3.86 0-7 3.01-7 6.72 0 4.71 5.3 10.97 6.06 11.85a1.2 1.2 0 0 0 1.88 0C13.7 19.69 19 13.43 19 8.72 19 5.01 15.86 2 12 2Z"/>
+                  <path fill="#EA4335" d="M12 2c3.86 0 7 3.01 7 6.72 0 4.71-5.3 10.97-6.06 11.85a1.2 1.2 0 0 1-1.88 0V2Z"/>
+                  <circle cx="12" cy="8.7" r="2.65" fill="#FBBC05"/>
+                  <circle cx="12" cy="8.7" r="1.2" fill="#4285F4"/>
+                </svg>
+              </div>
               <div class="schedule-meta-copy" id="scheduleModalAddress"></div>
-            </div>
+            </a>
             <div class="schedule-meta-block" id="scheduleDressCodeBlock" hidden>
               <span class="schedule-meta-label">Dress Code</span>
               <div class="schedule-meta-copy" id="scheduleModalDressCode"></div>
@@ -255,11 +267,11 @@ const CFG = {
   quote: "Two Souls · One Destiny",
   verse: '"So they are no longer two, but one flesh. Therefore what God has joined together, let no one separate."<span class="verse-ref">Mark 10:8-9</span>',
   celebrations: [
-    { name: "Haldi", date: "24.11.26", time: "10am onwards", address: "UTS Campus, Mission Road, Buxibazar, Cuttack, Odisha 753001", photo: "./static/haldi.png", dressCode: "Yellow" },
-    { name: "Mehendi", date: "24.11.26", time: "7pm onwards", address: "UTS Campus, Mission Road, Buxibazar, Cuttack, Odisha 753001", photo: "./static/mehendi.png" },
-    { name: "Wedding", date: "25.11.26", time: "4:30pm", address: "Cuttack Odia Baptist Church, Odisha", photo: "./static/wedding.png" },
-    { name: "Wedding Dinner", date: "25.11.26", time: "8:30pm onwards", address: "UTS Campus, Mission Road, Buxibazar, Cuttack, Odisha 753001", photo: "./static/wedding-dinner.png" },
-    { name: "Reception", date: "27.11.26", time: "7pm onwards", address: "Officers' Association B.S.P.- Pragati Bhawan, Civic Center, Sector 6, Bhilai, Chhattisgarh 490006", photo: "./static/reception.png" }
+    { name: "Haldi", date: "24.11.26", time: "10am onwards", address: "UTS Campus, Mission Road, Buxibazar, Cuttack, Odisha 753001", mapLink: "https://maps.app.goo.gl/LcyJcW472bVHNSvU9", photo: "./static/haldi.png", dressCode: "Yellow" },
+    { name: "Mehendi", date: "24.11.26", time: "7pm onwards", address: "UTS Campus, Mission Road, Buxibazar, Cuttack, Odisha 753001", mapLink: "https://maps.app.goo.gl/LcyJcW472bVHNSvU9", photo: "./static/mehendi.png" },
+    { name: "Wedding", date: "25.11.26", time: "4:30pm", address: "Cuttack Odia Baptist Church, Odisha", mapLink: "https://maps.app.goo.gl/m2TNUK81Kg5a2ZfX9", photo: "./static/wedding.png" },
+    { name: "Wedding Dinner", date: "25.11.26", time: "8:30pm onwards", address: "UTS Campus, Mission Road, Buxibazar, Cuttack, Odisha 753001", mapLink: "https://maps.app.goo.gl/LcyJcW472bVHNSvU9", photo: "./static/wedding-dinner.png" },
+    { name: "Reception", date: "27.11.26", time: "7pm onwards", address: "Officers' Association B.S.P.- Pragati Bhawan, Civic Center, Sector 6, Bhilai, Chhattisgarh 490006", mapLink: "https://maps.app.goo.gl/5GL6YX9SFwK1peZL8", photo: "./static/reception.png" }
   ],
   venue: "Islamic Center of Melville",
   address: "118 Old East Neck Road, Melville, NY 11747",
@@ -293,6 +305,7 @@ $("foot").textContent=CFG.name1+" and "+CFG.name2;
     $("scheduleModalDate").textContent=CFG.celebrations[index].date;
     $("scheduleModalTime").textContent=CFG.celebrations[index].time;
     $("scheduleModalAddress").textContent=CFG.celebrations[index].address;
+    $("scheduleModalAddressLink").href=CFG.celebrations[index].mapLink;
     const dressCodeBlock=$("scheduleDressCodeBlock");
     const dressCode=CFG.celebrations[index].dressCode;
     dressCodeBlock.hidden=!dressCode;
