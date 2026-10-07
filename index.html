@@ -26,7 +26,7 @@ body{display:flex;justify-content:center;min-height:100vh;background:
 @media(min-width:768px){.phone-shell{margin:24px 0;border-radius:28px;overflow:hidden}}
 /* cover */
 body.locked{overflow:hidden;position:fixed;width:100%;height:100%}
-#cover{touch-action:none;overscroll-behavior:contain;position:fixed;inset:0;z-index:10;background:var(--green);color:#f6f1e7;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;cursor:pointer;transition:transform 1s ease,opacity 1s ease}
+#cover{touch-action:none;overscroll-behavior:contain;position:fixed;inset:0;z-index:10;background:var(--green);color:#f6f1e7;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;cursor:pointer;transition:transform 1.8s cubic-bezier(.22,.7,.2,1),opacity 1.8s ease}
 #cover.open{transform:translateY(-100%);opacity:0;pointer-events:none}
 #cover .seal{width:120px;height:120px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#c9a469,#8a6a38);display:grid;place-items:center;font:italic 2.2rem "Cormorant Garamond",serif;color:#fff8e6;box-shadow:0 8px 24px #0006}
 #cover h1{font-size:2.4rem;padding:0 20px}
@@ -42,7 +42,10 @@ body.locked{overflow:hidden;position:fixed;width:100%;height:100%}
 .heart canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:grab;transition:opacity 1s}
 .heart canvas.gone{opacity:0;pointer-events:none}
 .hint{font-size:.85rem;opacity:.75;margin:0 0 6px}
-#hero .quote{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:1.4rem;margin:28px 0 8px;color:var(--gold)}
+#hero .quote-wrap{max-width:520px;margin-top:28px}
+#hero .quote{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:1.4rem;margin:0 0 14px;color:var(--gold)}
+#hero .verse{margin:0;font-family:"Cormorant Garamond",serif;font-style:italic;font-size:1.1rem;line-height:1.7;color:var(--ink)}
+#hero .verse-ref{display:block;margin-top:6px;font-size:.92rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
 #hero p{max-width:460px}
 .scroll{margin-top:30px;display:flex;flex-direction:column;align-items:center;gap:10px;font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;opacity:.72;color:var(--gold)}
 .scroll .chevrons{display:grid;gap:4px}
@@ -98,8 +101,10 @@ footer h2{color:#e0c490;margin-bottom:6px}
     <h1><span id="n1"></span><br><span class="amp">&amp;</span><br><span id="n2"></span></h1>
     <div class="hw"><div class="heart"><div class="reveal"><small>SAVE THE DATE</small><span id="dateText"></span></div><canvas id="scratch" width="280" height="240"></canvas></div><canvas id="sparkle" width="360" height="320"></canvas></div>
     <p class="hint" id="hint">Scratch the heart to reveal the date</p>
-    <div class="quote" id="quote"></div>
-    <p id="invite"></p>
+    <div class="quote-wrap">
+      <div class="quote" id="quote"></div>
+      <p class="verse" id="verse"></p>
+    </div>
     <div class="scroll" aria-hidden="true">
       <span class="chevrons"><span></span><span></span><span></span></span>
       <span>Scroll down</span>
@@ -169,7 +174,7 @@ const CFG = {
   dateISO: "2026-11-25T17:00:00",   // wedding date + start time (local)
   dateText: "25.11.26",
   quote: "Two Souls · One destiny",
-  invite: "Dear Friends and Family, join us for an evening of love, laughter, prayers, and unforgettable memories as we begin our forever.",
+  verse: '"So they are no longer two, but one flesh. 9 Therefore what God has joined together, let no one separate."<span class="verse-ref">Mark 10:8-9</span>',
   events: [
     ["Guest Arrival", "5 PM"],
     ["Nikkah Ceremony", "6 PM"],
@@ -191,7 +196,7 @@ const $=id=>document.getElementById(id);
 document.title=CFG.title;
 $("c-mono").textContent=CFG.monogram;$("c-title").textContent=CFG.title;
 $("n1").textContent=CFG.name1;$("n2").textContent=CFG.name2;
-$("dateText").textContent=CFG.dateText;$("quote").textContent=CFG.quote;$("invite").textContent=CFG.invite;
+$("dateText").textContent=CFG.dateText;$("quote").textContent=CFG.quote;$("verse").innerHTML=CFG.verse;
 $("sched").innerHTML=CFG.events.map(e=>`<li><h3></h3><time></time></li>`).join("");
 [...$("sched").children].forEach((li,i)=>{li.querySelector("h3").textContent=CFG.events[i][0];li.querySelector("time").textContent=CFG.events[i][1]});
 $("venue").textContent=CFG.venue;$("addr").textContent=CFG.address;
@@ -286,7 +291,7 @@ mb.addEventListener("click",()=>audio.paused?audio.play():audio.pause());
     const d=x.getImageData(0,0,c.width,c.height).data;let clear=0,tot=0;
     for(let i=3;i<d.length;i+=64){tot++;if(d[i]<128)clear++}
     if(clear/tot>.25&&!revealed){
-      revealed=true;c.classList.add("gone");$("hint").textContent="Save the date!";
+      revealed=true;c.classList.add("gone");$("hint").style.display="none";
       if(!reduce){burst(OFF+W/2,OFF+H/2-20,110,5);cancelAnimationFrame(raf);raf=requestAnimationFrame(loop)}
     }
   }
