@@ -162,7 +162,8 @@ body.locked{overflow:hidden;position:fixed;width:100%;height:100%}
 /* rsvp */
 #rsvp{max-width:none;background:linear-gradient(180deg,#eef6ff 0%,#dceafb 100%)}
 #rsvp h2{color:#1e3f73}
-#rsvp .rsvp-question{margin:0;font-size:.9rem;line-height:1.6;color:inherit;font-family:inherit;font-weight:inherit}
+#rsvp p,#rsvp label,#rsvp .radio label,#rsvp .rsvp-question,#rsvp #done{color:#274873}
+#rsvp .rsvp-question{margin:0;font-size:.9rem;line-height:1.6;color:#274873;font-family:inherit;font-weight:inherit}
 form{display:grid;gap:14px;text-align:left;margin-top:22px}
 label{font-size:.9rem}
 input,textarea,select{width:100%;padding:11px 12px;font:inherit;background:rgba(241,247,255,.94);color:#274873;border:1px solid rgba(30,63,115,.18);border-radius:14px}
@@ -373,6 +374,7 @@ const CFG = {
   ],
   galleryPhotos: Array.from({ length: 10 }, (_, index) => `../photos/${index + 1}.png`),
   rsvpIntro: "Because every great wedding needs its favourite people.",
+  googleScriptUrl: "",              // Paste your deployed Google Apps Script Web App URL here
   rsvpWhatsApp: "919993562067",                 // e.g. "15165551234" (digits only) to receive RSVPs by WhatsApp
   rsvpEmail: "",                    // or an email address to receive RSVPs
   musicUrl: ""                      // direct link to an .mp3 file
@@ -459,10 +461,11 @@ $("foot").textContent="Selina & Edward";
 (function(){
   const photos=CFG.galleryPhotos||[];
   if(!photos.length)return;
+  const section=$("glimpse");
   const prevImg=$("glimpsePrevImage"),currentImg=$("glimpseCurrentImage"),nextImg=$("glimpseNextImage");
   const prevBtn=$("glimpsePrev"),nextBtn=$("glimpseNext"),dots=$("glimpseDots"),count=$("glimpseCount"),stage=$("glimpseStage");
   const reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;
-  let index=0,auto=0,startX=null;
+  let index=0,auto=0,startX=null,visible=false;
   const mod=value=>(value+photos.length)%photos.length;
   dots.innerHTML=photos.map((_,i)=>`<button class="glimpse-dot${i===0?" active":""}" type="button" data-index="${i}" aria-label="Show photo ${i+1}"></button>`).join("");
   const dotButtons=[...dots.children];
@@ -505,6 +508,18 @@ $("foot").textContent="Selina & Edward";
     move(delta<0?1:-1);
   });
   stage.addEventListener("pointerleave",()=>{startX=null;});
+  new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting&&!visible){
+        visible=true;
+        index=0;
+        render();
+        queueAuto();
+      }else if(!entry.isIntersecting){
+        visible=false;
+      }
+    });
+  },{threshold:.65}).observe(section);
   render();
   queueAuto();
 })();
@@ -744,17 +759,59 @@ const funSection=$("fun"),rsvpSection=$("rsvp");
 
 $("form").addEventListener("submit",e=>{
   e.preventDefault();
+  submitRsvp(e).catch(()=>{});
+});
+
+async function submitRsvp(e){
   if(!window.validateFunQuestions())return;
   const f=new FormData(e.target);
-  const funAnswers=[...document.querySelectorAll(".fun-question")].map(card=>`${card.dataset.question}: ${f.get(card.dataset.name)||"-"}`).join("\n");
-  const msg=`RSVP – ${CFG.title}\nName: ${f.get("name")}\nAttending: ${f.get("att")}\nNote for the couple: ${f.get("note")||"-"}\n\nFun Questions\n${funAnswers}`;
-  const out=$("done");out.style.display="block";
-  out.textContent="Thank you! Your response is ready to send.";
+  const answers=[...document.querySelectorAll(".fun-question")].map(card=>({
+    question: card.dataset.question,
+    answer: f.get(card.dataset.name)||"-"
+  }));
+  const payload={
+    name: String(f.get("name")||""),
+    attending: String(f.get("att")||""),
+    note: String(f.get("note")||""),
+    answers
+  };
+  const funAnswers=answers.map(item=>`${item.question}: ${item.answer}`).join("\n");
+  const msg=`RSVP – ${CFG.title}\nName: ${payload.name}\nAttending: ${payload.attending}\nNote for the couple: ${payload.note||"-"}\n\nFun Questions\n${funAnswers}`;
+  const out=$("done");
+  out.style.display="block";
+  out.textContent="Submitting your RSVP...";
+  out.replaceChildren(document.createTextNode("Submitting your RSVP..."));
+  if(CFG.googleScriptUrl){
+    try{
+      await fetch(CFG.googleScriptUrl,{
+        method:"POST",
+        mode:"no-cors",
+        headers:{"Content-Type":"text/plain;charset=utf-8"},
+        body:JSON.stringify(payload)
+      });
+      out.textContent="Thank you! Your RSVP has been submitted.";
+      e.target.reset();
+      document.querySelectorAll(".fun-question").forEach(card=>card.classList.remove("missing"));
+      return;
+    }catch(err){
+      out.textContent="We couldn't reach the RSVP sheet right now. Use the backup option below.";
+    }
+  }else{
+    out.textContent="Google Sheets is not connected yet. Use the backup option below.";
+  }
   let link="";
   if(CFG.rsvpWhatsApp)link="https://wa.me/"+CFG.rsvpWhatsApp+"?text="+encodeURIComponent(msg);
-  else if(CFG.rsvpEmail)link="mailto:"+CFG.rsvpEmail+"?subject="+encodeURIComponent("RSVP – "+f.get("name"))+"&body="+encodeURIComponent(msg);
-  if(link){const a=document.createElement("a");a.className="btn";a.href=link;a.target="_blank";a.rel="noopener";a.textContent="Send RSVP";out.append(document.createElement("br"),a)}
-});
+  else if(CFG.rsvpEmail)link="mailto:"+CFG.rsvpEmail+"?subject="+encodeURIComponent("RSVP – "+payload.name)+"&body="+encodeURIComponent(msg);
+  if(link){
+    const a=document.createElement("a");
+    a.className="btn";
+    a.href=link;
+    a.target="_blank";
+    a.rel="noopener";
+    a.textContent="Send RSVP Manually";
+    out.append(document.createElement("br"),a);
+  }
+}
 </script>
 </body>
 </html>
