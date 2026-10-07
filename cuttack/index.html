@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>The Eternal Chapter</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Edu+QLD+Hand:wght@400;700&family=Jost:wght@300;400&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#f6f1e7;--ink:#2b3a30;--green:#2f4a3a;--gold:#a8844d;--card:#fffaf0;--line:#d8ccb4;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -64,6 +64,17 @@ body.locked{overflow:hidden;position:fixed;width:100%;height:100%}
 #count .cd{margin:0}
 .cd div{min-width:68px}.cd b{display:block;font:400 2.6rem "Cormorant Garamond",serif;color:#e0c490}
 .cd span{font-size:.8rem;opacity:.8}
+/* note */
+#note{position:relative;max-width:none;background:
+  linear-gradient(rgba(17,24,19,.34),rgba(17,24,19,.34)),
+  url("https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80") center/cover no-repeat;color:#f6f1e7;overflow:hidden}
+#note::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(13,20,16,.2),rgba(13,20,16,.48));pointer-events:none}
+#note>*{position:relative;z-index:1}
+#note h2{font-family:"Edu QLD Hand",cursive;color:#f4deba;margin-bottom:20px}
+.note-letter{width:min(100%,540px);margin:0 auto;padding:28px 24px;border:1px solid rgba(244,222,186,.34);border-radius:28px;background:rgba(18,28,22,.38);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);text-align:left;box-shadow:0 24px 70px rgba(0,0,0,.18)}
+.note-letter p{margin:0 0 16px;max-width:none;color:rgba(246,241,231,.94)}
+.note-letter p:last-child{margin-bottom:0}
+.note-signoff{font-family:"Cormorant Garamond",serif;font-size:1.35rem;font-style:italic;color:#f4deba}
 /* schedule */
 .sched{list-style:none;margin:0;padding:0;border-left:1px solid var(--line);text-align:left;margin-left:18px}
 .sched li{position:relative;padding:0 0 28px 28px}
@@ -133,6 +144,19 @@ footer h2{color:#e0c490;margin-bottom:6px}
     <h2 style="color:#e0c490">Until We Say "I Do"</h2>
   </section>
 
+  <section id="note">
+    <h2>A Note from Us</h2>
+    <div class="note-letter">
+      <p>Our story is a little unexpected.</p>
+      <p>She’s from Odisha.<br>He’s from Chhattisgarh.</p>
+      <p>From two different states two different traditions, two different family recipes and probably a few friendly arguments about whose food is better!... somehow God brought us to the same place—each other ❤️</p>
+      <p>Now, Odisha and Chhattisgarh aren't just places on a map for us—they are two homes, two families, and two worlds becoming one.</p>
+      <p>We feel incredibly blessed and excited to celebrate this moment with the people who have been a part of our lives and our journey.<br>So, come laugh with us, celebrate with us, bless us, and make some beautiful memories with us.</p>
+      <p>After all, our forever would be even more special with you there.</p>
+      <p class="note-signoff">With all our love<br>Selina &amp; Edward</p>
+    </div>
+  </section>
+
   <section>
     <h2>Schedule of Events</h2>
     <ul class="sched" id="sched"></ul>
@@ -185,7 +209,7 @@ const CFG = {
   monogram: "E&S",
   dateISO: "2026-11-25T17:00:00",   // wedding date + start time (local)
   dateText: "25.11.26",
-  quote: "Two Souls · One destiny",
+  quote: "Two Souls · One Destiny",
   verse: '"So they are no longer two, but one flesh. Therefore what God has joined together, let no one separate."<span class="verse-ref">Mark 10:8-9</span>',
   events: [
     ["Guest Arrival", "5 PM"],
