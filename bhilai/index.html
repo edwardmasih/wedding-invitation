@@ -28,7 +28,10 @@ body{display:flex;justify-content:center;min-height:100vh;background:
 body.locked{overflow:hidden;position:fixed;width:100%;height:100%}
 #cover{touch-action:none;overscroll-behavior:contain;position:fixed;inset:0;z-index:10;background:var(--green);color:#f6f1e7;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;cursor:pointer;transition:transform 1.8s cubic-bezier(.22,.7,.2,1),opacity 1.8s ease}
 #cover.open{transform:translateY(-100%);opacity:0;pointer-events:none}
-#cover .seal{width:120px;height:120px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#c9a469,#8a6a38);display:grid;place-items:center;font:italic 2.2rem "Cormorant Garamond",serif;color:#fff8e6;box-shadow:0 8px 24px #0006}
+#cover .cover-arc{width:min(86vw,350px);height:auto;display:block;margin-bottom:-52px;overflow:visible}
+#cover .cover-arc text{font:400 1.8rem "Cormorant Garamond",serif;fill:currentColor;letter-spacing:.04em}
+#cover .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+#cover .seal{width:140px;height:140px;background:url("./static/stamp-transparent.png") center/contain no-repeat;display:block;box-shadow:none;transform:translateY(-120px)}
 #cover h1{font-size:2.4rem;padding:0 20px}
 /* hero */
 #hero{min-height:100vh;min-height:100svh;display:flex;flex-direction:column;justify-content:center;align-items:center;max-width:none;background:linear-gradient(var(--bg),var(--card))}
@@ -132,8 +135,16 @@ footer h2{color:#e0c490;margin-bottom:6px}
 <body class="locked">
 <div class="phone-shell">
   <div id="cover" role="button" tabindex="0" aria-label="Open invitation">
-    <div class="seal" id="c-mono"></div>
-    <h1 id="c-title"></h1>
+    <svg class="cover-arc" viewBox="0 0 320 180" aria-hidden="true" focusable="false">
+      <defs>
+        <path id="coverArcPath" d="M36 138 A124 124 0 0 1 284 138" />
+      </defs>
+      <text text-anchor="middle">
+        <textPath href="#coverArcPath" startOffset="50%">The Eternal Chapter</textPath>
+      </text>
+    </svg>
+    <div class="seal" id="c-mono" aria-hidden="true"></div>
+    <h1 id="c-title" class="sr-only">The Eternal Chapter</h1>
     <div>Tap to open</div>
   </div>
 
@@ -141,7 +152,7 @@ footer h2{color:#e0c490;margin-bottom:6px}
   <audio id="audio" loop></audio>
 
   <section id="hero">
-    <div class="small">WEDDING DAY</div>
+    <div class="small">THE WEDDING OF</div>
     <h1><span id="n1"></span><span class="amp">&amp;</span><span id="n2"></span></h1>
     <div class="hw"><div class="heart"><div class="reveal"><small>SAVE THE DATE</small><span id="dateText"></span></div><canvas id="scratch" width="280" height="240"></canvas></div><canvas id="sparkle" width="360" height="320"></canvas></div>
     <p class="hint" id="hint">Scratch the heart to reveal the date</p>
@@ -171,7 +182,7 @@ footer h2{color:#e0c490;margin-bottom:6px}
     <div class="note-letter">
       <p>Our story is a little unexpected.</p>
       <p>She’s from Odisha.<br>He’s from Chhattisgarh.</p>
-      <p>From two different states two different traditions, two different family recipes and probably a few friendly arguments about whose food is better!... somehow God brought us to the same place—each other ❤️</p>
+      <p>From two different states, two different traditions, two different family recipes and probably a few friendly arguments about whose food is better!... somehow God brought us to the same place—each other ❤️</p>
       <p>Now, Odisha and Chhattisgarh aren't just places on a map for us—they are two homes, two families, and two worlds becoming one.</p>
       <p>We feel incredibly blessed and excited to celebrate this moment with the people who have been a part of our lives and our journey. So, come laugh with us, celebrate with us, bless us, and make some beautiful memories with us.</p>
       <p>After all, our forever would be even more special with you there.</p>
@@ -285,7 +296,7 @@ const CFG = {
 /* =================================== */
 const $=id=>document.getElementById(id);
 document.title=CFG.title;
-$("c-mono").textContent=CFG.monogram;$("c-title").textContent=CFG.title;
+$("c-title").textContent=CFG.title;
 $("n1").textContent=CFG.name1;$("n2").textContent=CFG.name2;
 $("dateText").textContent=CFG.dateText;$("quote").textContent=CFG.quote;$("verse").innerHTML=CFG.verse;
 $("sched").innerHTML=CFG.celebrations.map((event,i)=>`<button class="schedule-card" type="button" data-index="${i}" data-row="${i===4?3:(i>1?2:1)}"><div class="schedule-photo"></div><div class="schedule-card-body"><div class="schedule-kicker">Tap to view</div></div></button>`).join("");
