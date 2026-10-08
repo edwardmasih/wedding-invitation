@@ -212,6 +212,10 @@ footer h2{color:#fff1d8;margin-bottom:6px}
 .admin-browser{padding-top:18px}
 .admin-screen{display:none}
 .admin-screen.active{display:block}
+.admin-pills{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.admin-pill{border:1px solid rgba(143,76,104,.18);border-radius:999px;padding:8px 14px;background:rgba(247,223,232,.45);color:#8f4c68;font:600 .86rem/1 Jost,system-ui,sans-serif;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease,background .2s ease,border-color .2s ease}
+.admin-pill:hover,.admin-pill:focus-visible{transform:translateY(-1px);box-shadow:0 10px 20px rgba(120,46,77,.12);outline:none}
+.admin-pill.active{background:#ffffff;border-color:rgba(143,76,104,.34);box-shadow:0 12px 24px rgba(120,46,77,.12)}
 .admin-list{display:grid;gap:10px;max-height:100%;overflow:auto;padding:4px 4px 4px 0}
 .admin-item{width:100%;border:1px solid rgba(143,76,104,.12);border-radius:18px;background:rgba(247,223,232,.45);color:#8f4c68;padding:14px 16px;font:inherit;text-align:left;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease,background .2s ease}
 .admin-item:hover,.admin-item:focus-visible{transform:translateY(-1px);box-shadow:0 12px 24px rgba(120,46,77,.12);outline:none}
@@ -219,6 +223,11 @@ footer h2{color:#fff1d8;margin-bottom:6px}
 .admin-item-name{display:block;font-family:"Cormorant Garamond",serif;font-size:1.22rem;line-height:1.1}
 .admin-back{display:inline-flex;align-items:center;gap:8px;border:0;background:transparent;color:#8f4c68;padding:0;margin:0 0 14px;font:600 .9rem/1 Jost,system-ui,sans-serif;cursor:pointer}
 .admin-back:hover,.admin-back:focus-visible{opacity:.78;outline:none}
+.admin-detail-actions{display:flex;justify-content:flex-end;margin-top:16px}
+.admin-delete{width:42px;height:42px;border:0;border-radius:50%;padding:0;background:#b54949;color:#fff8f7;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 12px 24px rgba(181,73,73,.18);transition:transform .2s ease,box-shadow .2s ease,filter .2s ease}
+.admin-delete:hover,.admin-delete:focus-visible{transform:translateY(-1px);box-shadow:0 16px 28px rgba(181,73,73,.24);outline:none;filter:brightness(.98)}
+.admin-delete:disabled{opacity:.6;cursor:wait;transform:none;box-shadow:none}
+.admin-delete svg{width:18px;height:18px;display:block}
 .admin-detail{border:1px solid rgba(143,76,104,.12);border-radius:24px;background:#fff;padding:18px 18px 20px;box-shadow:0 20px 34px rgba(120,46,77,.08)}
 .admin-detail-title{margin:0 0 16px;font-family:"Cormorant Garamond",serif;font-size:1.9rem;line-height:1;color:#8f4c68}
 .admin-detail-grid{display:grid;gap:12px}
@@ -477,6 +486,11 @@ const CFG = {
   galleryPhotos: Array.from({ length: 10 }, (_, index) => `../photos/${index + 1}.png`),
   rsvpIntro: "Because every great wedding needs its favourite people.",
   googleScriptUrl: "https://script.google.com/macros/s/AKfycbxVWtc-1NJ7elYFdLOQG42WquPwslhj2v4BN3NMiy4ZKI7jcWDkR2KF01to1bN1xob3/exec",              // Paste your deployed Google Apps Script Web App URL here
+  rsvpSource: "cuttack",
+  adminSources: [
+    { id: "cuttack", label: "Cuttack" },
+    { id: "bhilai", label: "Bhilai" }
+  ],
   adminPassword: "2806",
   rsvpWhatsApp: "918260859488",                 // e.g. "15165551234" (digits only) to receive RSVPs by WhatsApp
   rsvpEmail: "",                    // or an email address to receive RSVPs
@@ -812,6 +826,7 @@ function closeAdminModal(){
 function renderAdminTable(headers,rows){
   const wrap=$("adminTableWrap");
   const meta=$("adminMeta");
+  const status=$("adminStatus");
   if(!headers.length){
     wrap.innerHTML='<div class="admin-empty">No RSVP data found.</div>';
     meta.textContent="";
@@ -827,9 +842,11 @@ function renderAdminTable(headers,rows){
   browser.className="admin-browser";
   const listScreen=document.createElement("div");
   listScreen.className="admin-screen active";
+  const pills=document.createElement("div");
+  pills.className="admin-pills";
   const list=document.createElement("div");
   list.className="admin-list";
-  listScreen.append(list);
+  listScreen.append(pills,list);
   const detailScreen=document.createElement("div");
   detailScreen.className="admin-screen";
   const backButton=document.createElement("button");
@@ -839,9 +856,20 @@ function renderAdminTable(headers,rows){
   const detail=document.createElement("div");
   detail.className="admin-detail";
   detailScreen.append(backButton,detail);
+  const sources=CFG.adminSources || [];
+  const entriesBySource=sources.reduce((map,source)=>{
+    map[source.id]=entries.filter(entry=>entry.Source===source.id);
+    return map;
+  },{});
+  let activeSource=(sources.find(source=>(entriesBySource[source.id]||[]).length)||sources[0]||{id:""}).id;
   const setScreen=screen=>{
     listScreen.classList.toggle("active",screen==="list");
     detailScreen.classList.toggle("active",screen==="detail");
+  };
+  const updateMeta=sourceId=>{
+    const source=sources.find(item=>item.id===sourceId);
+    const count=(entriesBySource[sourceId]||[]).length;
+    meta.textContent=`${source?source.label:sourceId} · ${count} RSVP entr${count===1?"y":"ies"}`;
   };
   const showEntry=entry=>{
     detail.replaceChildren();
@@ -882,25 +910,73 @@ function renderAdminTable(headers,rows){
       detail.append(title,empty);
       return;
     }
-    detail.append(title,grid);
+    const actions=document.createElement("div");
+    actions.className="admin-detail-actions";
+    const deleteButton=document.createElement("button");
+    deleteButton.type="button";
+    deleteButton.className="admin-delete";
+    deleteButton.setAttribute("aria-label",`Delete RSVP for ${entry.Name || "this guest"}`);
+    deleteButton.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M9 3h6l1 2h4v2H4V5h4l1-2Zm1 6h2v8h-2V9Zm4 0h2v8h-2V9ZM7 9h2v8H7V9Zm-1 12a2 2 0 0 1-2-2V8h16v11a2 2 0 0 1-2 2H6Z"/></svg>';
+    deleteButton.addEventListener("click",async()=>{
+      if(!confirm(`Delete RSVP for ${entry.Name || "this guest"}?`))return;
+      deleteButton.disabled=true;
+      status.textContent="Deleting RSVP...";
+      try{
+        await deleteAdminEntry(entry["Entry ID"],entry.Source || "");
+        status.textContent="RSVP deleted.";
+        await unlockAdmin();
+      }catch(err){
+        deleteButton.disabled=false;
+        status.textContent=err&&err.message?err.message:"Unable to delete RSVP.";
+      }
+    });
+    actions.append(deleteButton);
+    detail.append(title,grid,actions);
     setScreen("detail");
   };
   backButton.addEventListener("click",()=>setScreen("list"));
-  entries.forEach(entry=>{
-    const button=document.createElement("button");
-    button.type="button";
-    button.className="admin-item";
-    button.innerHTML=`<span class="admin-item-name">${entry.Name || "Guest"}</span>`;
-    button.addEventListener("click",()=>{
-      list.querySelectorAll(".admin-item").forEach(item=>item.classList.remove("active"));
-      button.classList.add("active");
-      showEntry(entry);
+  const renderList=sourceId=>{
+    activeSource=sourceId;
+    list.replaceChildren();
+    pills.querySelectorAll(".admin-pill").forEach(pill=>pill.classList.toggle("active",pill.dataset.source===sourceId));
+    const sourceEntries=entriesBySource[sourceId] || [];
+    if(!sourceEntries.length){
+      const empty=document.createElement("div");
+      empty.className="admin-empty";
+      empty.textContent="No RSVP data found.";
+      list.append(empty);
+      updateMeta(sourceId);
+      return;
+    }
+    sourceEntries.forEach(entry=>{
+      const button=document.createElement("button");
+      button.type="button";
+      button.className="admin-item";
+      button.innerHTML=`<span class="admin-item-name">${entry.Name || "Guest"}</span>`;
+      button.addEventListener("click",()=>{
+        list.querySelectorAll(".admin-item").forEach(item=>item.classList.remove("active"));
+        button.classList.add("active");
+        showEntry(entry);
+      });
+      list.append(button);
     });
-    list.append(button);
+    updateMeta(sourceId);
+  };
+  sources.forEach(source=>{
+    const pill=document.createElement("button");
+    pill.type="button";
+    pill.className=`admin-pill${source.id===activeSource?" active":""}`;
+    pill.dataset.source=source.id;
+    pill.textContent=source.label;
+    pill.addEventListener("click",()=>{
+      setScreen("list");
+      renderList(source.id);
+    });
+    pills.append(pill);
   });
+  renderList(activeSource);
   browser.append(listScreen,detailScreen);
   wrap.replaceChildren(browser);
-  meta.textContent=`${rows.length} RSVP entr${rows.length===1?"y":"ies"}`;
 }
 function loadAdminData(password){
   return new Promise((resolve,reject)=>{
@@ -931,6 +1007,42 @@ function loadAdminData(password){
     timeoutId=setTimeout(()=>{
       cleanup();
       reject(new Error("The request timed out."));
+    },12000);
+    document.head.append(script);
+  });
+}
+function deleteAdminEntry(entryId,source){
+  return new Promise((resolve,reject)=>{
+    if(!CFG.googleScriptUrl){
+      reject(new Error("Google script URL is missing."));
+      return;
+    }
+    const url=new URL(CFG.googleScriptUrl);
+    url.searchParams.set("action","delete");
+    url.searchParams.set("password",CFG.adminPassword);
+    url.searchParams.set("source",source || "");
+    url.searchParams.set("entryId",entryId || "");
+    const callbackName=`rsvpDelete_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    let timeoutId=0;
+    const cleanup=()=>{
+      if(timeoutId)clearTimeout(timeoutId);
+      delete window[callbackName];
+      if(script.parentNode)script.remove();
+    };
+    window[callbackName]=payload=>{
+      cleanup();
+      if(payload&&payload.ok)resolve(payload);
+      else reject(new Error(payload&&payload.error?payload.error:"Unable to delete RSVP."));
+    };
+    const script=document.createElement("script");
+    script.src=`${url.toString()}&callback=${callbackName}`;
+    script.onerror=()=>{
+      cleanup();
+      reject(new Error("Unable to delete RSVP."));
+    };
+    timeoutId=setTimeout(()=>{
+      cleanup();
+      reject(new Error("The delete request timed out."));
     },12000);
     document.head.append(script);
   });
@@ -1141,6 +1253,7 @@ async function submitRsvp(e){
     answer: f.get(card.dataset.name)||"-"
   }));
   const payload={
+    source: CFG.rsvpSource,
     name: String(f.get("name")||""),
     attending: String(f.get("att")||""),
     note: String(f.get("note")||""),
