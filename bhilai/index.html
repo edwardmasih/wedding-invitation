@@ -139,7 +139,7 @@ body.locked{overflow:hidden;position:fixed;width:100%;height:100%}
 /* fun questions */
 #fun{max-width:none;background:linear-gradient(180deg,#eef6ff 0%,#dbe9fb 100%)}
 #fun h2{max-width:320px;margin:0 auto 16px;color:#1e3f73;line-height:1.12;font-size:1.9rem}
-.fun-intro{max-width:none;margin:0 auto 28px;color:rgba(30,63,115,.72);font-size:.82rem;white-space:nowrap}
+.fun-intro{max-width:none;margin:0 auto 12px;color:#8a6a14;font-family:"Cormorant Garamond",serif;font-size:1.02rem;letter-spacing:.02em;white-space:nowrap}
 .fun-grid{display:grid;gap:16px}
 .fun-card{margin:0;padding:20px 18px;border-radius:24px;background:rgba(255,255,255,.82);border:1px solid rgba(30,63,115,.12);box-shadow:0 18px 36px rgba(34,62,102,.08);text-align:left;min-width:0;transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease}
 .fun-card.missing{border-color:#1e3f73;box-shadow:0 18px 40px rgba(30,63,115,.16);animation:fun-bounce .48s ease 2}
@@ -148,7 +148,7 @@ body.locked{overflow:hidden;position:fixed;width:100%;height:100%}
 .fun-option{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.9);cursor:pointer}
 .fun-option input{width:auto;margin:0;accent-color:#1e3f73}
 .fun-option-copy{font-size:.95rem;color:#2c4a76}
-.fun-note{margin:18px 0 0;font-size:.82rem;color:rgba(39,72,115,.75)}
+.fun-note{margin:0 0 14px;font-size:.82rem;color:rgba(39,72,115,.75)}
 @keyframes fun-bounce{0%,100%{transform:translateY(0)}35%{transform:translateY(-8px)}65%{transform:translateY(4px)}}
 @media(min-width:560px){.fun-grid{grid-template-columns:1fr 1fr}}
 /* location */
@@ -166,6 +166,7 @@ body.locked{overflow:hidden;position:fixed;width:100%;height:100%}
 #rsvp p,#rsvp label,#rsvp .radio label,#rsvp .rsvp-question,#rsvp #done{color:#274873}
 #rsvp .rsvp-question{margin:0;font-size:.9rem;line-height:1.6;color:#274873;font-family:inherit;font-weight:inherit}
 form{display:grid;gap:14px;text-align:left;margin-top:22px}
+form.submitting .rsvp-wait{display:block}
 label{font-size:.9rem}
 input,textarea,select{width:100%;padding:11px 12px;font:inherit;background:rgba(241,247,255,.94);color:#274873;border:1px solid rgba(30,63,115,.18);border-radius:14px}
 input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid #1e3f73}
@@ -174,6 +175,8 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px soli
 #rsvp .btn:hover,#rsvp .btn:focus-visible{background:#153158;color:#f4f8ff}
 #rsvp .btn.loading{font-size:0;pointer-events:none;opacity:.92}
 #rsvp .btn.loading::after{content:"\2665";font-size:1.55rem;line-height:1;color:inherit;display:inline-block;animation:rsvp-heartbeat .9s ease-in-out infinite}
+.rsvp-wait{display:none;margin:-4px 0 0;text-align:center;font-size:.86rem;color:rgba(39,72,115,.82)}
+.rsvp-wait::after{content:"";display:inline-block;width:1.3em;text-align:left;animation:rsvp-wait-dots 1.2s steps(4,end) infinite}
 #done{display:none;margin-top:22px;padding:20px;border:1px solid var(--gold);border-radius:6px}
 #rsvp.success-state>h2,#rsvp.success-state>#rsvpIntro,#rsvp.success-state>form,#rsvp.success-state>#done{opacity:0;pointer-events:none}
 .rsvp-success{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:40px 24px;opacity:0;pointer-events:none;transition:opacity .35s ease;text-align:center}
@@ -182,6 +185,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px soli
 .rsvp-success-message{margin:0;font-family:"Cormorant Garamond",serif;font-size:2rem;line-height:1.1;color:#1e3f73}
 @keyframes rsvp-heartbeat{0%,100%{transform:scale(1)}20%{transform:scale(1.14)}40%{transform:scale(.96)}60%{transform:scale(1.18)}80%{transform:scale(1)}}
 @keyframes heart-shine{0%,100%{filter:brightness(1)}50%{filter:brightness(1.18)}}
+@keyframes rsvp-wait-dots{0%{content:""}25%{content:"."}50%{content:".."}75%,100%{content:"..."}}
 footer{padding:60px 24px;background:linear-gradient(rgba(68,114,171,.74),rgba(30,63,115,.84)),url("./static/last_bg.png") center/cover no-repeat;color:#f4f8ff}
 body:not(.final-ready) footer{display:none}
 footer .footer-photo{display:block;width:min(100%,260px);margin:0 auto 24px;border-radius:28px;box-shadow:0 24px 48px rgba(18,46,84,.28)}
@@ -201,8 +205,9 @@ footer h2{color:#f4f8ff;margin-bottom:6px}
 .admin-form input{flex:1 1 220px;min-width:0}
 .admin-form button{border:0;border-radius:14px;padding:11px 16px;background:#1e3f73;color:#f4f8ff;font:inherit;cursor:pointer}
 .admin-status{margin:0;font-size:.92rem;color:#274873;min-height:1.4em}
-.admin-content{display:none;flex:1;min-height:0;flex-direction:column}
+.admin-content{display:none;flex:1;min-height:0;flex-direction:column;position:relative}
 .admin-content.visible{display:flex}
+.admin-content.busy>:not(.admin-loading){filter:blur(6px);pointer-events:none}
 .admin-toolbar{padding:14px 22px;border-bottom:1px solid rgba(30,63,115,.12);display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
 .admin-meta{font-size:.88rem;color:#274873}
 .admin-refresh{width:42px;height:42px;border:1px solid rgba(30,63,115,.16);border-radius:50%;background:#ffffff;color:#1e3f73;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 10px 24px rgba(18,46,84,.08);transition:transform .2s ease,box-shadow .2s ease,background .2s ease}
@@ -236,6 +241,10 @@ footer h2{color:#f4f8ff;margin-bottom:6px}
 .admin-detail-label{display:block;margin-bottom:6px;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(39,72,115,.72)}
 .admin-detail-value{margin:0;font-size:.98rem;line-height:1.5;color:#1e3f73;word-break:break-word}
 .admin-detail-empty{font-size:.96rem;color:#274873}
+.admin-loading{position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;background:rgba(244,248,255,.52);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);z-index:2;text-align:center}
+.admin-content.busy .admin-loading{display:flex}
+.admin-loading-spinner{width:46px;height:46px;border-radius:50%;border:3px solid rgba(30,63,115,.18);border-top-color:#1e3f73;animation:admin-refresh-spin .8s linear infinite}
+.admin-loading-text{margin:0;font-size:.94rem;color:#1e3f73}
 #adminModal .admin-empty{padding:22px;color:#274873}
 @keyframes admin-refresh-spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 @media(max-width:767px){
@@ -303,6 +312,10 @@ footer h2{color:#f4f8ff;margin-bottom:6px}
           </button>
         </div>
         <div class="admin-table-wrap" id="adminTableWrap"></div>
+        <div class="admin-loading" id="adminLoading" hidden aria-hidden="true">
+          <div class="admin-loading-spinner" aria-hidden="true"></div>
+          <p class="admin-loading-text" id="adminLoadingText">Deleting RSVP...</p>
+        </div>
       </div>
     </div>
   </dialog>
@@ -406,6 +419,7 @@ footer h2{color:#f4f8ff;margin-bottom:6px}
   <section id="fun">
     <h2>A few fun questions before the big day!</h2>
     <p class="fun-intro">Just for smiles, guesses, and a little pre-wedding gossip.</p>
+    <p class="fun-note">You can’t escape the questions. 🙂‍↔️<br>Answer all 3 before unlocking the next page. 😂</p>
     <div class="fun-grid">
       <div class="fun-card fun-question" data-name="fun1" data-question="Predict their married life in one word:" role="radiogroup" aria-label="Predict their married life in one word:">
         <p class="fun-question-title">Predict their married life in one word:</p>
@@ -435,7 +449,6 @@ footer h2{color:#f4f8ff;margin-bottom:6px}
         </div>
       </div>
     </div>
-    <p class="fun-note">Note: answering the questions is mandatory.</p>
   </section>
 
   <section id="rsvp">
@@ -450,6 +463,7 @@ footer h2{color:#f4f8ff;margin-bottom:6px}
       </div>
       <label>A note for the couple<textarea name="note" rows="4"></textarea></label>
       <button class="btn" type="submit">Submit RSVP</button>
+      <p class="rsvp-wait">Wait a little</p>
     </form>
     <div id="done"></div>
     <div class="rsvp-success" aria-hidden="true">
@@ -823,6 +837,15 @@ function closeAdminModal(){
   if(modal.open)modal.close();
   document.body.classList.remove("locked");
 }
+function setAdminBusy(isBusy,message="Deleting RSVP..."){
+  const content=$("adminContent");
+  const loading=$("adminLoading");
+  const loadingText=$("adminLoadingText");
+  if(loadingText)loadingText.textContent=message;
+  content.classList.toggle("busy",isBusy);
+  loading.hidden=!isBusy;
+  loading.setAttribute("aria-hidden",String(!isBusy));
+}
 function renderAdminTable(headers,rows){
   const wrap=$("adminTableWrap");
   const meta=$("adminMeta");
@@ -878,8 +901,8 @@ function renderAdminTable(headers,rows){
     title.textContent=entry.Name || "Guest";
     const grid=document.createElement("div");
     grid.className="admin-detail-grid";
-    const usedHeaders=new Set(["Name"]);
-    headers.filter(header=>header!="Name").forEach(header=>{
+    const usedHeaders=new Set(["Name","Entry ID","Source"]);
+    headers.filter(header=>!["Name","Entry ID","Source"].includes(header)).forEach(header=>{
       if(usedHeaders.has(header))return;
       const match=header.match(/^Question\s+(\d+)$/);
       const block=document.createElement("div");
@@ -920,12 +943,16 @@ function renderAdminTable(headers,rows){
     deleteButton.addEventListener("click",async()=>{
       if(!confirm(`Delete RSVP for ${entry.Name || "this guest"}?`))return;
       deleteButton.disabled=true;
+      setAdminBusy(true,"Deleting RSVP...");
       status.textContent="Deleting RSVP...";
       try{
         await deleteAdminEntry(entry["Entry ID"],entry.Source || "");
         status.textContent="RSVP deleted.";
         await unlockAdmin();
+        setAdminBusy(false);
+        setScreen("list");
       }catch(err){
+        setAdminBusy(false);
         deleteButton.disabled=false;
         status.textContent=err&&err.message?err.message:"Unable to delete RSVP.";
       }
@@ -1063,9 +1090,11 @@ async function unlockAdmin(){
     $("adminAuthView").style.display="none";
     $("adminContent").hidden=false;
     $("adminContent").classList.add("visible");
+    setAdminBusy(false);
     renderAdminTable(data.headers||[],data.rows||[]);
     status.textContent="";
   }catch(err){
+    setAdminBusy(false);
     status.textContent=err&&err.message?err.message:"Unable to load data.";
   }
 }
@@ -1224,7 +1253,7 @@ const funSection=$("fun"),rsvpSection=$("rsvp");
     if(correcting||!goingDown)return;
     const missing=unanswered();
     if(!missing.length)return;
-    if(funSection.getBoundingClientRect().top<innerHeight*.55&&rsvpSection.getBoundingClientRect().top<innerHeight*.92){
+    if(funSection.getBoundingClientRect().top<innerHeight*.7&&rsvpSection.getBoundingClientRect().top<innerHeight){
       correcting=true;
       bounce(missing);
       funSection.scrollIntoView({behavior:reduce?"auto":"smooth",block:"start"});
@@ -1267,6 +1296,7 @@ async function submitRsvp(e){
   out.style.display="none";
   out.replaceChildren();
   submitBtn.disabled=true;
+  form.classList.add("submitting");
   submitBtn.classList.add("loading");
   if(CFG.googleScriptUrl){
     try{
@@ -1282,6 +1312,7 @@ async function submitRsvp(e){
       if(note)note.style.display="none";
       if(funSection)funSection.style.display="none";
       document.documentElement.classList.remove("typing");
+      form.classList.remove("submitting");
       submitBtn.disabled=false;
       submitBtn.classList.remove("loading");
       submitBtn.textContent=defaultLabel;
@@ -1294,6 +1325,7 @@ async function submitRsvp(e){
       },2000);
       return;
     }catch(err){
+      form.classList.remove("submitting");
       submitBtn.disabled=false;
       submitBtn.classList.remove("loading");
       submitBtn.textContent=defaultLabel;
@@ -1301,6 +1333,7 @@ async function submitRsvp(e){
       out.textContent="We couldn't reach the RSVP sheet right now. Use the backup option below.";
     }
   }else{
+    form.classList.remove("submitting");
     submitBtn.disabled=false;
     submitBtn.classList.remove("loading");
     submitBtn.textContent=defaultLabel;
