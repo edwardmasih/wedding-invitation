@@ -1,6 +1,6 @@
 function doPost(e) {
   const payload = JSON.parse(e.postData.contents || '{}');
-  const spreadsheet = SpreadsheetApp.openById('PASTE_YOUR_SHEET_ID_HERE');
+  const spreadsheet = SpreadsheetApp.openById('1a3EBD4zQT4S6uZwZpSH7DaY6vhq3SmlQ6aKIptYM8M4');
   const sheet = spreadsheet.getSheetByName('RSVP') || spreadsheet.insertSheet('RSVP');
 
   if (sheet.getLastRow() === 0) {
