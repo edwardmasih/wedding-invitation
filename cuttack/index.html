@@ -184,7 +184,13 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px soli
 footer{padding:60px 24px;background:linear-gradient(rgba(212,130,159,.72),rgba(188,90,128,.82)),url("./static/last_bg.png") center/cover no-repeat;color:#fff7fb}
 footer .footer-photo{display:block;width:min(100%,260px);margin:0 auto 24px;border-radius:28px;box-shadow:0 24px 48px rgba(106,36,69,.28)}
 footer h2{color:#fff1d8;margin-bottom:6px}
-#music{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:5;width:44px;height:44px;border-radius:50%;border:1px solid var(--gold);background:var(--card);color:var(--gold);cursor:pointer;display:none}
+#music{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:5;width:52px;height:52px;border-radius:50%;border:1px solid rgba(194,75,125,.28);background:rgba(255,250,244,.92);color:#c24b7d;cursor:pointer;display:none;box-shadow:0 14px 28px rgba(120,46,77,.18);font-size:0}
+#music::before{content:"♪";font-size:1.4rem;line-height:1}
+#music.playing{animation:music-spin 2.4s linear infinite}
+#music.playing::before{content:"♫";display:inline-block;animation:music-pulse 1.2s ease-in-out infinite}
+#music.paused::before{content:"♪";opacity:.62}
+@keyframes music-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+@keyframes music-spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){#cover{transition:none}html{scroll-behavior:auto}.scroll .chevrons,.scroll .chevrons span{animation:none;opacity:1}}
 @media(min-width:768px){#count{min-height:auto}}
 @media(max-width:767px){
@@ -391,7 +397,7 @@ const CFG = {
   googleScriptUrl: "https://script.google.com/macros/s/AKfycbxVWtc-1NJ7elYFdLOQG42WquPwslhj2v4BN3NMiy4ZKI7jcWDkR2KF01to1bN1xob3/exec",              // Paste your deployed Google Apps Script Web App URL here
   rsvpWhatsApp: "918260859488",                 // e.g. "15165551234" (digits only) to receive RSVPs by WhatsApp
   rsvpEmail: "",                    // or an email address to receive RSVPs
-  musicUrl: ""                      // direct link to an .mp3 file
+  musicUrl: "../music/song.mp3"                      // direct link to an .mp3 file
 };
 /* =================================== */
 const $=id=>document.getElementById(id);
@@ -658,13 +664,46 @@ tick();setInterval(tick,1000);
 
 /* cover + music */
 const audio=$("audio"),mb=$("music");
+let musicFadeTimer=0;
+audio.loop=false;
+function clearMusicFade(){
+  if(musicFadeTimer){
+    clearInterval(musicFadeTimer);
+    musicFadeTimer=0;
+  }
+}
+function playMusicWithFade(restart=false){
+  clearMusicFade();
+  if(restart)audio.currentTime=0;
+  audio.volume=0;
+  audio.play().catch(()=>{});
+  musicFadeTimer=setInterval(()=>{
+    audio.volume=Math.min(1,audio.volume+.08);
+    if(audio.volume>=1)clearMusicFade();
+  },80);
+}
+function syncMusicButton(){
+  const playing=!audio.paused&&!audio.ended;
+  mb.classList.toggle("playing",playing);
+  mb.classList.toggle("paused",!playing);
+  mb.setAttribute("aria-label",playing?"Pause music":"Play music");
+  mb.setAttribute("aria-pressed",String(playing));
+}
 function openInv(){
   $("cover").classList.add("open");document.body.classList.remove("locked");window.scrollTo(0,0);
-  if(CFG.musicUrl){audio.src=CFG.musicUrl;audio.play().catch(()=>{});mb.style.display="block"}
+  if(CFG.musicUrl){
+    if(audio.src!==CFG.musicUrl)audio.src=CFG.musicUrl;
+    mb.style.display="block";
+    playMusicWithFade();
+    syncMusicButton();
+  }
 }
 $("cover").addEventListener("click",e=>{if(e.target.closest("[data-open-invite]"))openInv()});
 $("cover").addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();openInv()}});
-mb.addEventListener("click",()=>audio.paused?audio.play():audio.pause());
+mb.addEventListener("click",()=>{if(audio.paused)playMusicWithFade();else{clearMusicFade();audio.pause();}});
+audio.addEventListener("play",syncMusicButton);
+audio.addEventListener("pause",syncMusicButton);
+audio.addEventListener("ended",()=>{syncMusicButton();if(CFG.musicUrl)playMusicWithFade(true);});
 
 /* scratch heart */
 (function(){
