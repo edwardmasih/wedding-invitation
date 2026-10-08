@@ -496,7 +496,7 @@ $("foot").textContent="Selina & Edward";
   const prevImg=$("glimpsePrevImage"),currentImg=$("glimpseCurrentImage"),nextImg=$("glimpseNextImage");
   const prevBtn=$("glimpsePrev"),nextBtn=$("glimpseNext"),dots=$("glimpseDots"),count=$("glimpseCount"),stage=$("glimpseStage");
   const reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;
-  let index=0,auto=0,startX=null,visible=false;
+  let index=0,auto=0,startX=null,visible=false,pausedByTouch=false,resumePauseTimer=0;
   const mod=value=>(value+photos.length)%photos.length;
   dots.innerHTML=photos.map((_,i)=>`<button class="glimpse-dot${i===0?" active":""}" type="button" data-index="${i}" aria-label="Show photo ${i+1}"></button>`).join("");
   const dotButtons=[...dots.children];
@@ -512,9 +512,23 @@ $("foot").textContent="Selina & Edward";
     if(count)count.textContent=`${String(index+1).padStart(2,"0")} / ${String(photos.length).padStart(2,"0")}`;
   }
   function queueAuto(){
-    if(reduce)return;
+    if(reduce||pausedByTouch)return;
     clearInterval(auto);
-    auto=setInterval(()=>move(1),1000);
+    auto=setInterval(()=>move(1),1400);
+  }
+  function pauseAuto(){
+    if(reduce)return;
+    pausedByTouch=true;
+    clearInterval(auto);
+    if(resumePauseTimer)clearTimeout(resumePauseTimer);
+  }
+  function resumeAutoLater(){
+    if(reduce)return;
+    if(resumePauseTimer)clearTimeout(resumePauseTimer);
+    resumePauseTimer=setTimeout(()=>{
+      pausedByTouch=false;
+      queueAuto();
+    },1800);
   }
   function move(step){
     index=mod(index+step);
@@ -530,15 +544,17 @@ $("foot").textContent="Selina & Edward";
     render();
     queueAuto();
   });
-  stage.addEventListener("pointerdown",e=>{startX=e.clientX;});
+  stage.addEventListener("pointerdown",e=>{startX=e.clientX;pauseAuto();});
   stage.addEventListener("pointerup",e=>{
     if(startX===null)return;
     const delta=e.clientX-startX;
     startX=null;
     if(Math.abs(delta)<28)return;
     move(delta<0?1:-1);
+    resumeAutoLater();
   });
-  stage.addEventListener("pointerleave",()=>{startX=null;});
+  stage.addEventListener("pointerleave",()=>{startX=null;resumeAutoLater();});
+  stage.addEventListener("pointercancel",()=>{startX=null;resumeAutoLater();});
   new IntersectionObserver(entries=>{
     entries.forEach(entry=>{
       if(entry.isIntersecting&&!visible){
@@ -677,7 +693,8 @@ function clearMusicFade(){
 function playMusicWithFade(restart=false){
   clearMusicFade();
   if(restart)audio.currentTime=0;
-  audio.volume=0;
+  const startVolume=audio.volume<=0?0.3:audio.volume;
+  audio.volume=startVolume;
   audio.play().catch(()=>{});
   musicFadeTimer=setInterval(()=>{
     audio.volume=Math.min(1,audio.volume+.08);
@@ -695,6 +712,7 @@ function openInv(){
   $("cover").classList.add("open");document.body.classList.remove("locked");window.scrollTo(0,0);
   if(CFG.musicUrl){
     if(audio.src!==CFG.musicUrl)audio.src=CFG.musicUrl;
+    if(audio.volume<=0)audio.volume=0.3;
     mb.style.display="block";
     playMusicWithFade();
     syncMusicButton();
