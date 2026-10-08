@@ -186,6 +186,31 @@ footer{padding:60px 24px;background:linear-gradient(rgba(68,114,171,.74),rgba(30
 body:not(.final-ready) footer{display:none}
 footer .footer-photo{display:block;width:min(100%,260px);margin:0 auto 24px;border-radius:28px;box-shadow:0 24px 48px rgba(18,46,84,.28)}
 footer h2{color:#f4f8ff;margin-bottom:6px}
+#adminToggle{position:fixed;left:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:6;width:38px;height:38px;border-radius:50%;border:1px solid rgba(30,63,115,.18);background:rgba(244,248,255,.12);color:#1e3f73;cursor:pointer;opacity:.14;box-shadow:0 10px 20px rgba(18,46,84,.12);font-size:1rem;line-height:1;display:flex;align-items:center;justify-content:center;transition:opacity .2s ease,transform .2s ease,background .2s ease}
+#adminToggle:hover,#adminToggle:focus-visible{opacity:.9;transform:translateY(-1px) scale(1.02);background:rgba(244,248,255,.92);outline:none}
+#adminModal{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;padding:18px;border:0;background:transparent;color:inherit}
+#adminModal::backdrop{background:rgba(12,24,40,.58);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+#adminModal.open{display:flex}
+.admin-panel{position:relative;width:min(100%,640px);max-height:min(86vh,860px);overflow:hidden;border-radius:28px;background:#f4f8ff;box-shadow:0 30px 100px rgba(8,20,36,.28);color:#1e3f73;display:flex;flex-direction:column}
+.admin-panel h2{margin:0 0 6px;color:#1e3f73}
+.admin-head{padding:22px 22px 14px;border-bottom:1px solid rgba(30,63,115,.12)}
+.admin-close{position:absolute;top:12px;right:12px;width:38px;height:38px;border:0;border-radius:50%;background:rgba(30,63,115,.1);color:#1e3f73;font:inherit;cursor:pointer}
+.admin-auth{padding:22px;display:grid;gap:14px}
+.admin-auth p{margin:0;color:#274873}
+.admin-form{display:flex;gap:10px;flex-wrap:wrap}
+.admin-form input{flex:1 1 220px;min-width:0}
+.admin-form button{border:0;border-radius:14px;padding:11px 16px;background:#1e3f73;color:#f4f8ff;font:inherit;cursor:pointer}
+.admin-status{margin:0;font-size:.92rem;color:#274873;min-height:1.4em}
+.admin-content{display:none;flex:1;min-height:0;flex-direction:column}
+.admin-content.visible{display:flex}
+.admin-toolbar{padding:14px 22px;border-bottom:1px solid rgba(30,63,115,.12);display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.admin-meta{font-size:.88rem;color:#274873}
+.admin-table-wrap{flex:1;min-height:0;overflow:auto;padding:0 22px 22px}
+.admin-table{width:100%;border-collapse:collapse;min-width:760px;background:#fff}
+.admin-table th,.admin-table td{padding:10px 12px;border-bottom:1px solid rgba(30,63,115,.12);text-align:left;vertical-align:top}
+.admin-table th{position:sticky;top:0;background:#dceafb;color:#1e3f73;z-index:1;font-size:.82rem;letter-spacing:.08em;text-transform:uppercase}
+.admin-table tr:nth-child(even) td{background:rgba(220,234,251,.32)}
+#adminModal .admin-empty{padding:22px;color:#274873}
 #music{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:5;width:52px;height:52px;border-radius:50%;border:1px solid rgba(30,63,115,.22);background:rgba(244,248,255,.92);color:#1e3f73;cursor:pointer;display:none;box-shadow:0 14px 28px rgba(18,46,84,.18);font-size:0}
 #music::before{content:"♪";font-size:1.4rem;line-height:1}
 #music.playing{animation:music-spin 2.4s linear infinite}
@@ -217,6 +242,31 @@ footer h2{color:#f4f8ff;margin-bottom:6px}
     <h1 id="c-title" class="sr-only">The Eternal Chapter</h1>
     <div class="open-trigger" data-open-invite="true">Tap to open</div>
   </div>
+
+  <button id="adminToggle" type="button" aria-label="Open RSVP admin data">★</button>
+  <dialog id="adminModal" aria-hidden="true">
+    <div class="admin-panel" aria-labelledby="adminTitle">
+      <button class="admin-close" id="adminClose" type="button" aria-label="Close admin panel">×</button>
+      <div class="admin-head">
+        <h2 id="adminTitle">RSVP Data</h2>
+      </div>
+      <div class="admin-auth" id="adminAuthView">
+        <p>Enter the password to view the RSVP sheet.</p>
+        <form class="admin-form" id="adminForm">
+          <input id="adminPassword" type="password" inputmode="numeric" autocomplete="one-time-code" placeholder="Password" aria-label="Password">
+          <button type="submit">Unlock</button>
+        </form>
+        <p class="admin-status" id="adminStatus"></p>
+      </div>
+      <div class="admin-content" id="adminContent" hidden>
+        <div class="admin-toolbar">
+          <div class="admin-meta" id="adminMeta"></div>
+          <button class="admin-form button" id="adminRefresh" type="button">Refresh</button>
+        </div>
+        <div class="admin-table-wrap" id="adminTableWrap"></div>
+      </div>
+    </div>
+  </dialog>
 
   <button id="music" aria-label="Toggle music">♪</button>
   <audio id="audio" loop></audio>
@@ -397,6 +447,7 @@ const CFG = {
   galleryPhotos: Array.from({ length: 10 }, (_, index) => `../photos/${index + 1}.png`),
   rsvpIntro: "Because every great wedding needs its favourite people.",
   googleScriptUrl: "https://script.google.com/macros/s/AKfycbxVWtc-1NJ7elYFdLOQG42WquPwslhj2v4BN3NMiy4ZKI7jcWDkR2KF01to1bN1xob3/exec",              // Paste your deployed Google Apps Script Web App URL here
+  adminPassword: "2806",
   rsvpWhatsApp: "919993562067",                 // e.g. "15165551234" (digits only) to receive RSVPs by WhatsApp
   rsvpEmail: "",                    // or an email address to receive RSVPs
   musicUrl: "../music/song.mp3"                     // direct link to an .mp3 file
@@ -708,6 +759,113 @@ function syncMusicButton(){
   mb.setAttribute("aria-label",playing?"Pause music":"Play music");
   mb.setAttribute("aria-pressed",String(playing));
 }
+function openAdminModal(){
+  const modal=$("adminModal");
+  if(!modal.open)modal.showModal();
+  modal.classList.add("open");
+  modal.setAttribute("aria-hidden","false");
+  document.body.classList.add("locked");
+  $("adminPassword").value="";
+  $("adminStatus").textContent="";
+  $("adminAuthView").style.display="grid";
+  $("adminContent").hidden=true;
+  $("adminContent").classList.remove("visible");
+  setTimeout(()=>$("adminPassword").focus(),0);
+}
+function closeAdminModal(){
+  const modal=$("adminModal");
+  modal.classList.remove("open");
+  modal.setAttribute("aria-hidden","true");
+  if(modal.open)modal.close();
+  document.body.classList.remove("locked");
+}
+function renderAdminTable(headers,rows){
+  const wrap=$("adminTableWrap");
+  const meta=$("adminMeta");
+  if(!headers.length){
+    wrap.innerHTML='<div class="admin-empty">No RSVP data found.</div>';
+    meta.textContent="";
+    return;
+  }
+  const table=document.createElement("table");
+  table.className="admin-table";
+  const thead=document.createElement("thead");
+  const headRow=document.createElement("tr");
+  headers.forEach(header=>{
+    const th=document.createElement("th");
+    th.textContent=header;
+    headRow.append(th);
+  });
+  thead.append(headRow);
+  const tbody=document.createElement("tbody");
+  rows.forEach(row=>{
+    const tr=document.createElement("tr");
+    headers.forEach((_,index)=>{
+      const td=document.createElement("td");
+      td.textContent=row[index] ?? "";
+      tr.append(td);
+    });
+    tbody.append(tr);
+  });
+  table.append(thead,tbody);
+  wrap.replaceChildren(table);
+  meta.textContent=`${rows.length} RSVP entr${rows.length===1?"y":"ies"}`;
+}
+function loadAdminData(password){
+  return new Promise((resolve,reject)=>{
+    if(!CFG.googleScriptUrl){
+      reject(new Error("Google script URL is missing."));
+      return;
+    }
+    const url=new URL(CFG.googleScriptUrl);
+    url.searchParams.set("action","admin");
+    url.searchParams.set("password",password);
+    const callbackName=`rsvpAdmin_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    let timeoutId=0;
+    const cleanup=()=>{
+      if(timeoutId)clearTimeout(timeoutId);
+      delete window[callbackName];
+      if(script.parentNode)script.remove();
+    };
+    window[callbackName]=payload=>{
+      cleanup();
+      resolve(payload);
+    };
+    const script=document.createElement("script");
+    script.src=`${url.toString()}&callback=${callbackName}`;
+    script.onerror=()=>{
+      cleanup();
+      reject(new Error("Unable to load RSVP data."));
+    };
+    timeoutId=setTimeout(()=>{
+      cleanup();
+      reject(new Error("The request timed out."));
+    },12000);
+    document.head.append(script);
+  });
+}
+async function unlockAdmin(){
+  const password=$("adminPassword").value.trim();
+  const status=$("adminStatus");
+  if(password!==CFG.adminPassword){
+    status.textContent="Incorrect password.";
+    return;
+  }
+  status.textContent="Loading RSVP data...";
+  try{
+    const data=await loadAdminData(password);
+    if(!data||!data.ok){
+      throw new Error(data&&data.error?data.error:"Unable to load data.");
+    }
+    $("adminAuthView").style.display="none";
+    $("adminContent").hidden=false;
+    $("adminContent").classList.add("visible");
+    renderAdminTable(data.headers||[],data.rows||[]);
+    status.textContent="";
+  }catch(err){
+    status.textContent=err&&err.message?err.message:"Unable to load data.";
+  }
+}
 function openInv(){
   $("cover").classList.add("open");document.body.classList.remove("locked");window.scrollTo(0,0);
   if(CFG.musicUrl){
@@ -720,6 +878,13 @@ function openInv(){
 }
 $("cover").addEventListener("click",e=>{if(e.target.closest("[data-open-invite]"))openInv()});
 $("cover").addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();openInv()}});
+$("adminToggle").addEventListener("click",openAdminModal);
+$("adminClose").addEventListener("click",closeAdminModal);
+$("adminModal").addEventListener("click",e=>{if(e.target.id==="adminModal")closeAdminModal()});
+$("adminModal").addEventListener("cancel",e=>{e.preventDefault();closeAdminModal()});
+$("adminForm").addEventListener("submit",e=>{e.preventDefault();unlockAdmin();});
+$("adminRefresh").addEventListener("click",()=>unlockAdmin());
+addEventListener("keydown",e=>{if(e.key==="Escape"&&$("adminModal").classList.contains("open"))closeAdminModal()});
 mb.addEventListener("click",()=>{if(audio.paused)playMusicWithFade();else{clearMusicFade();audio.pause();}});
 audio.addEventListener("play",syncMusicButton);
 audio.addEventListener("pause",syncMusicButton);
