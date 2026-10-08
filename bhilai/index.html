@@ -183,6 +183,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px soli
 @keyframes rsvp-heartbeat{0%,100%{transform:scale(1)}20%{transform:scale(1.14)}40%{transform:scale(.96)}60%{transform:scale(1.18)}80%{transform:scale(1)}}
 @keyframes heart-shine{0%,100%{filter:brightness(1)}50%{filter:brightness(1.18)}}
 footer{padding:60px 24px;background:linear-gradient(rgba(68,114,171,.74),rgba(30,63,115,.84)),url("./static/last_bg.png") center/cover no-repeat;color:#f4f8ff}
+body:not(.final-ready) footer{display:none}
 footer .footer-photo{display:block;width:min(100%,260px);margin:0 auto 24px;border-radius:28px;box-shadow:0 24px 48px rgba(18,46,84,.28)}
 footer h2{color:#f4f8ff;margin-bottom:6px}
 #music{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:5;width:52px;height:52px;border-radius:50%;border:1px solid rgba(30,63,115,.22);background:rgba(244,248,255,.92);color:#1e3f73;cursor:pointer;display:none;box-shadow:0 14px 28px rgba(18,46,84,.18);font-size:0}
@@ -196,6 +197,7 @@ footer h2{color:#f4f8ff;margin-bottom:6px}
 @media(min-width:768px){#count{min-height:auto}}
 @media(max-width:767px){
   html{scroll-snap-type:y mandatory}
+  html.typing{scroll-snap-type:none;scroll-behavior:auto}
   .phone-shell>section,.phone-shell>footer{scroll-snap-align:start;scroll-snap-stop:always;min-height:100vh;min-height:100svh;display:flex;flex-direction:column;justify-content:center}
 }
 </style>
@@ -790,6 +792,10 @@ const funSection=$("fun"),rsvpSection=$("rsvp");
   let submitted=false;
   let lastY=window.scrollY,correcting=false;
   const unanswered=()=>submitted?[]:questions.filter(card=>!document.querySelector(`input[name="${card.dataset.name}"]:checked`));
+  const syncTypingState=()=>{
+    const active=document.activeElement;
+    document.documentElement.classList.toggle("typing",!!(active&&form.contains(active)));
+  };
   function syncNote(){
     if(!note)return;
     note.style.display=unanswered().length?"block":"none";
@@ -810,11 +816,14 @@ const funSection=$("fun"),rsvpSection=$("rsvp");
     return false;
   }
   questions.forEach(card=>card.addEventListener("change",()=>{submitted=false;card.classList.remove("missing");syncNote()}));
+  form.addEventListener("focusin",syncTypingState);
+  form.addEventListener("focusout",()=>{setTimeout(syncTypingState,0)});
   form.addEventListener("input",()=>{submitted=false;});
   addEventListener("scroll",()=>{
     const currentY=window.scrollY;
     const goingDown=currentY>lastY;
     lastY=currentY;
+    if(form.contains(document.activeElement))return;
     if(correcting||!goingDown)return;
     const missing=unanswered();
     if(!missing.length)return;
@@ -874,13 +883,17 @@ async function submitRsvp(e){
       document.querySelectorAll(".fun-question").forEach(card=>card.classList.remove("missing"));
       if(note)note.style.display="none";
       if(funSection)funSection.style.display="none";
+      document.documentElement.classList.remove("typing");
       submitBtn.disabled=false;
       submitBtn.classList.remove("loading");
       submitBtn.textContent=defaultLabel;
       section.classList.add("success-state");
       const success=section.querySelector(".rsvp-success");
       if(success)success.setAttribute("aria-hidden","false");
-      setTimeout(()=>{if(nextPage)nextPage.scrollIntoView({behavior:"smooth",block:"start"});},2000);
+      setTimeout(()=>{
+        document.body.classList.add("final-ready");
+        requestAnimationFrame(()=>{if(nextPage)nextPage.scrollIntoView({behavior:"smooth",block:"start"});});
+      },2000);
       return;
     }catch(err){
       submitBtn.disabled=false;
