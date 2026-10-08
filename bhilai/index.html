@@ -186,7 +186,7 @@ footer{padding:60px 24px;background:linear-gradient(rgba(68,114,171,.74),rgba(30
 body:not(.final-ready) footer{display:none}
 footer .footer-photo{display:block;width:min(100%,260px);margin:0 auto 24px;border-radius:28px;box-shadow:0 24px 48px rgba(18,46,84,.28)}
 footer h2{color:#f4f8ff;margin-bottom:6px}
-#adminToggle{position:fixed;left:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:6;width:38px;height:38px;border-radius:50%;border:1px solid rgba(30,63,115,.18);background:rgba(244,248,255,.12);color:#1e3f73;cursor:pointer;opacity:.14;box-shadow:0 10px 20px rgba(18,46,84,.12);font-size:1rem;line-height:1;display:flex;align-items:center;justify-content:center;transition:opacity .2s ease,transform .2s ease,background .2s ease}
+#adminToggle{position:absolute;left:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:2;width:38px;height:38px;border-radius:50%;border:1px solid rgba(30,63,115,.18);background:rgba(244,248,255,.12);color:#1e3f73;cursor:pointer;opacity:.14;box-shadow:0 10px 20px rgba(18,46,84,.12);font-size:1rem;line-height:1;display:flex;align-items:center;justify-content:center;transition:opacity .2s ease,transform .2s ease,background .2s ease}
 #adminToggle:hover,#adminToggle:focus-visible{opacity:.9;transform:translateY(-1px) scale(1.02);background:rgba(244,248,255,.92);outline:none}
 #adminModal{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;padding:18px;border:0;background:transparent;color:inherit}
 #adminModal::backdrop{background:rgba(12,24,40,.58);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
@@ -205,12 +205,39 @@ footer h2{color:#f4f8ff;margin-bottom:6px}
 .admin-content.visible{display:flex}
 .admin-toolbar{padding:14px 22px;border-bottom:1px solid rgba(30,63,115,.12);display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
 .admin-meta{font-size:.88rem;color:#274873}
+.admin-refresh{width:42px;height:42px;border:1px solid rgba(30,63,115,.16);border-radius:50%;background:#ffffff;color:#1e3f73;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 10px 24px rgba(18,46,84,.08);transition:transform .2s ease,box-shadow .2s ease,background .2s ease}
+.admin-refresh:hover,.admin-refresh:focus-visible{transform:translateY(-1px);box-shadow:0 14px 28px rgba(18,46,84,.14);outline:none;background:#eef6ff}
+.admin-refresh svg{width:18px;height:18px;display:block}
+.admin-refresh.spinning svg{animation:admin-refresh-spin .8s linear}
 .admin-table-wrap{flex:1;min-height:0;overflow:auto;padding:0 22px 22px}
-.admin-table{width:100%;border-collapse:collapse;min-width:760px;background:#fff}
-.admin-table th,.admin-table td{padding:10px 12px;border-bottom:1px solid rgba(30,63,115,.12);text-align:left;vertical-align:top}
-.admin-table th{position:sticky;top:0;background:#dceafb;color:#1e3f73;z-index:1;font-size:.82rem;letter-spacing:.08em;text-transform:uppercase}
-.admin-table tr:nth-child(even) td{background:rgba(220,234,251,.32)}
+.admin-browser{padding-top:18px}
+.admin-screen{display:none}
+.admin-screen.active{display:block}
+.admin-list{display:grid;gap:10px;max-height:100%;overflow:auto;padding:4px 4px 4px 0}
+.admin-item{width:100%;border:1px solid rgba(30,63,115,.12);border-radius:18px;background:rgba(220,234,251,.45);color:#1e3f73;padding:14px 16px;font:inherit;text-align:left;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease,background .2s ease}
+.admin-item:hover,.admin-item:focus-visible{transform:translateY(-1px);box-shadow:0 12px 24px rgba(18,46,84,.12);outline:none}
+.admin-item.active{background:#ffffff;color:#1e3f73;border-color:rgba(30,63,115,.34);box-shadow:0 16px 30px rgba(18,46,84,.12)}
+.admin-item-name{display:block;font-family:"Cormorant Garamond",serif;font-size:1.22rem;line-height:1.1}
+.admin-back{display:inline-flex;align-items:center;gap:8px;border:0;background:transparent;color:#1e3f73;padding:0;margin:0 0 14px;font:600 .9rem/1 Jost,system-ui,sans-serif;cursor:pointer}
+.admin-back:hover,.admin-back:focus-visible{opacity:.78;outline:none}
+.admin-detail{border:1px solid rgba(30,63,115,.12);border-radius:24px;background:#fff;padding:18px 18px 20px;box-shadow:0 20px 34px rgba(18,46,84,.08)}
+.admin-detail-title{margin:0 0 16px;font-family:"Cormorant Garamond",serif;font-size:1.9rem;line-height:1;color:#1e3f73}
+.admin-detail-grid{display:grid;gap:12px}
+.admin-detail-block{padding:12px 14px;border-radius:18px;background:rgba(220,234,251,.32)}
+.admin-detail-label{display:block;margin-bottom:6px;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(39,72,115,.72)}
+.admin-detail-value{margin:0;font-size:.98rem;line-height:1.5;color:#1e3f73;word-break:break-word}
+.admin-detail-empty{font-size:.96rem;color:#274873}
 #adminModal .admin-empty{padding:22px;color:#274873}
+@keyframes admin-refresh-spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@media(max-width:767px){
+  .admin-panel{width:min(100%,100%);max-height:min(90vh,860px)}
+  .admin-head{padding:20px 18px 12px}
+  .admin-toolbar{padding:12px 18px}
+  .admin-table-wrap{padding:0 18px 18px}
+  .admin-list{max-height:220px;padding-right:0}
+  .admin-detail{padding:16px}
+  .admin-detail-title{font-size:1.65rem}
+}
 #music{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:5;width:52px;height:52px;border-radius:50%;border:1px solid rgba(30,63,115,.22);background:rgba(244,248,255,.92);color:#1e3f73;cursor:pointer;display:none;box-shadow:0 14px 28px rgba(18,46,84,.18);font-size:0}
 #music::before{content:"♪";font-size:1.4rem;line-height:1}
 #music.playing{animation:music-spin 2.4s linear infinite}
@@ -230,6 +257,7 @@ footer h2{color:#f4f8ff;margin-bottom:6px}
 <body class="locked">
 <div class="phone-shell">
   <div id="cover" role="button" tabindex="0" aria-label="Open invitation">
+    <button id="adminToggle" type="button" aria-label="Open RSVP admin data">★</button>
     <svg class="cover-arc" viewBox="0 0 320 180" aria-hidden="true" focusable="false">
       <defs>
         <path id="coverArcPath" d="M36 138 A124 124 0 0 1 284 138" />
@@ -242,8 +270,6 @@ footer h2{color:#f4f8ff;margin-bottom:6px}
     <h1 id="c-title" class="sr-only">The Eternal Chapter</h1>
     <div class="open-trigger" data-open-invite="true">Tap to open</div>
   </div>
-
-  <button id="adminToggle" type="button" aria-label="Open RSVP admin data">★</button>
   <dialog id="adminModal" aria-hidden="true">
     <div class="admin-panel" aria-labelledby="adminTitle">
       <button class="admin-close" id="adminClose" type="button" aria-label="Close admin panel">×</button>
@@ -261,7 +287,11 @@ footer h2{color:#f4f8ff;margin-bottom:6px}
       <div class="admin-content" id="adminContent" hidden>
         <div class="admin-toolbar">
           <div class="admin-meta" id="adminMeta"></div>
-          <button class="admin-form button" id="adminRefresh" type="button">Refresh</button>
+          <button class="admin-refresh" id="adminRefresh" type="button" aria-label="Refresh RSVP data">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path fill="currentColor" d="M12 5a7 7 0 0 1 6.2 3.75V6.5h1.8v6h-6V10.7h2.65A5.2 5.2 0 1 0 17.2 14h1.85A7 7 0 1 1 12 5Z"/>
+            </svg>
+          </button>
         </div>
         <div class="admin-table-wrap" id="adminTableWrap"></div>
       </div>
@@ -787,28 +817,89 @@ function renderAdminTable(headers,rows){
     meta.textContent="";
     return;
   }
-  const table=document.createElement("table");
-  table.className="admin-table";
-  const thead=document.createElement("thead");
-  const headRow=document.createElement("tr");
-  headers.forEach(header=>{
-    const th=document.createElement("th");
-    th.textContent=header;
-    headRow.append(th);
-  });
-  thead.append(headRow);
-  const tbody=document.createElement("tbody");
-  rows.forEach(row=>{
-    const tr=document.createElement("tr");
-    headers.forEach((_,index)=>{
-      const td=document.createElement("td");
-      td.textContent=row[index] ?? "";
-      tr.append(td);
+  const entries=rows.map(row=>Object.fromEntries(headers.map((header,index)=>[header,row[index] ?? ""]))).filter(entry=>Object.keys(entry).length);
+  if(!entries.length){
+    wrap.innerHTML='<div class="admin-empty">No RSVP data found.</div>';
+    meta.textContent="";
+    return;
+  }
+  const browser=document.createElement("div");
+  browser.className="admin-browser";
+  const listScreen=document.createElement("div");
+  listScreen.className="admin-screen active";
+  const list=document.createElement("div");
+  list.className="admin-list";
+  listScreen.append(list);
+  const detailScreen=document.createElement("div");
+  detailScreen.className="admin-screen";
+  const backButton=document.createElement("button");
+  backButton.type="button";
+  backButton.className="admin-back";
+  backButton.innerHTML="&#8249; Back to list";
+  const detail=document.createElement("div");
+  detail.className="admin-detail";
+  detailScreen.append(backButton,detail);
+  const setScreen=screen=>{
+    listScreen.classList.toggle("active",screen==="list");
+    detailScreen.classList.toggle("active",screen==="detail");
+  };
+  const showEntry=entry=>{
+    detail.replaceChildren();
+    const title=document.createElement("h3");
+    title.className="admin-detail-title";
+    title.textContent=entry.Name || "Guest";
+    const grid=document.createElement("div");
+    grid.className="admin-detail-grid";
+    const usedHeaders=new Set(["Name"]);
+    headers.filter(header=>header!="Name").forEach(header=>{
+      if(usedHeaders.has(header))return;
+      const match=header.match(/^Question\s+(\d+)$/);
+      const block=document.createElement("div");
+      block.className="admin-detail-block";
+      const label=document.createElement("span");
+      label.className="admin-detail-label";
+      label.textContent=header;
+      const value=document.createElement("p");
+      value.className="admin-detail-value";
+      if(match){
+        const answerHeader=`Answer ${match[1]}`;
+        usedHeaders.add(answerHeader);
+        label.textContent=`Question ${match[1]}`;
+        const questionText=entry[header] || "-";
+        const answerText=entry[answerHeader] || "-";
+        value.innerHTML=`<strong>${questionText}</strong><br>${answerText}`;
+      }else{
+        value.textContent=entry[header] || "-";
+      }
+      usedHeaders.add(header);
+      block.append(label,value);
+      grid.append(block);
     });
-    tbody.append(tr);
+    if(!grid.children.length){
+      const empty=document.createElement("p");
+      empty.className="admin-detail-empty";
+      empty.textContent="No RSVP details available.";
+      detail.append(title,empty);
+      return;
+    }
+    detail.append(title,grid);
+    setScreen("detail");
+  };
+  backButton.addEventListener("click",()=>setScreen("list"));
+  entries.forEach(entry=>{
+    const button=document.createElement("button");
+    button.type="button";
+    button.className="admin-item";
+    button.innerHTML=`<span class="admin-item-name">${entry.Name || "Guest"}</span>`;
+    button.addEventListener("click",()=>{
+      list.querySelectorAll(".admin-item").forEach(item=>item.classList.remove("active"));
+      button.classList.add("active");
+      showEntry(entry);
+    });
+    list.append(button);
   });
-  table.append(thead,tbody);
-  wrap.replaceChildren(table);
+  browser.append(listScreen,detailScreen);
+  wrap.replaceChildren(browser);
   meta.textContent=`${rows.length} RSVP entr${rows.length===1?"y":"ies"}`;
 }
 function loadAdminData(password){
@@ -866,6 +957,17 @@ async function unlockAdmin(){
     status.textContent=err&&err.message?err.message:"Unable to load data.";
   }
 }
+async function handleAdminRefresh(){
+  const button=$("adminRefresh");
+  button.classList.remove("spinning");
+  void button.offsetWidth;
+  button.classList.add("spinning");
+  try{
+    await unlockAdmin();
+  }finally{
+    setTimeout(()=>button.classList.remove("spinning"),800);
+  }
+}
 function openInv(){
   $("cover").classList.add("open");document.body.classList.remove("locked");window.scrollTo(0,0);
   if(CFG.musicUrl){
@@ -883,7 +985,7 @@ $("adminClose").addEventListener("click",closeAdminModal);
 $("adminModal").addEventListener("click",e=>{if(e.target.id==="adminModal")closeAdminModal()});
 $("adminModal").addEventListener("cancel",e=>{e.preventDefault();closeAdminModal()});
 $("adminForm").addEventListener("submit",e=>{e.preventDefault();unlockAdmin();});
-$("adminRefresh").addEventListener("click",()=>unlockAdmin());
+$("adminRefresh").addEventListener("click",()=>{handleAdminRefresh().catch(()=>{});});
 addEventListener("keydown",e=>{if(e.key==="Escape"&&$("adminModal").classList.contains("open"))closeAdminModal()});
 mb.addEventListener("click",()=>{if(audio.paused)playMusicWithFade();else{clearMusicFade();audio.pause();}});
 audio.addEventListener("play",syncMusicButton);
