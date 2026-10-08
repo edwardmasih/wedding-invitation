@@ -147,7 +147,7 @@ body.locked{overflow:hidden;position:fixed;width:100%;height:100%}
 .fun-option{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.72);cursor:pointer}
 .fun-option input{width:auto;margin:0;accent-color:#c24b7d}
 .fun-option-copy{font-size:.95rem;color:#4f3b31}
-.fun-note{margin:0 0 14px;font-size:.82rem;color:rgba(92,64,51,.75)}
+.fun-note{display:block;max-width:320px;margin:0 auto 14px;font-size:.9rem;line-height:1.45;color:#8f4c68;text-align:center}
 @keyframes fun-bounce{0%,100%{transform:translateY(0)}35%{transform:translateY(-8px)}65%{transform:translateY(4px)}}
 @media(min-width:560px){.fun-grid{grid-template-columns:1fr 1fr}}
 /* location */
@@ -161,6 +161,9 @@ body.locked{overflow:hidden;position:fixed;width:100%;height:100%}
 .card h3{font-size:1.5rem;color:var(--gold);margin-bottom:8px}
 /* rsvp */
 #rsvp{position:relative;overflow:hidden;max-width:none;background:linear-gradient(180deg,#fbf4ec 0%,#f7e7db 100%)}
+#rsvp.locked-pending{min-height:220px;padding:28px 24px;display:flex;align-items:center;justify-content:center}
+#rsvp.locked-pending>*{display:none}
+#rsvp.locked-pending::before{content:"Answer all 3 questions to unlock the RSVP page.";max-width:280px;font-family:"Cormorant Garamond",serif;font-size:1.35rem;line-height:1.3;color:#8f4c68;text-align:center}
 #rsvp h2{color:#8f4c68}
 #rsvp p,#rsvp label,#rsvp .radio label,#rsvp .rsvp-question,#rsvp #done{color:#5c4033}
 #rsvp .rsvp-question{margin:0;font-size:.9rem;line-height:1.6;color:#5c4033;font-family:inherit;font-weight:inherit}
@@ -268,6 +271,7 @@ footer h2{color:#fff1d8;margin-bottom:6px}
   html{scroll-snap-type:y mandatory}
   html.typing{scroll-snap-type:none;scroll-behavior:auto}
   .phone-shell>section,.phone-shell>footer{scroll-snap-align:start;scroll-snap-stop:always;min-height:100vh;min-height:100svh;display:flex;flex-direction:column;justify-content:center}
+  .phone-shell>#rsvp.locked-pending{min-height:34vh;min-height:34svh;justify-content:flex-start;scroll-snap-align:end;padding-top:42px;padding-bottom:42px}
 }
 </style>
 </head>
@@ -1216,15 +1220,16 @@ const funSection=$("fun"),rsvpSection=$("rsvp");
   const form=$("form");
   const note=document.querySelector(".fun-note");
   let submitted=false;
-  let lastY=window.scrollY,correcting=false;
   const unanswered=()=>submitted?[]:questions.filter(card=>!document.querySelector(`input[name="${card.dataset.name}"]:checked`));
   const syncTypingState=()=>{
     const active=document.activeElement;
     document.documentElement.classList.toggle("typing",!!(active&&form.contains(active)));
   };
-  function syncNote(){
+  function syncGate(){
+    const missing=unanswered();
+    rsvpSection.classList.toggle("locked-pending",!!missing.length);
     if(!note)return;
-    note.style.display=unanswered().length?"block":"none";
+    note.style.display=missing.length?"block":"none";
   }
   function bounce(cards=unanswered()){
     cards.forEach(card=>{
@@ -1241,28 +1246,13 @@ const funSection=$("fun"),rsvpSection=$("rsvp");
     missing[0].scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"});
     return false;
   }
-  questions.forEach(card=>card.addEventListener("change",()=>{submitted=false;card.classList.remove("missing");syncNote()}));
+  questions.forEach(card=>card.addEventListener("change",()=>{submitted=false;card.classList.remove("missing");syncGate()}));
   form.addEventListener("focusin",syncTypingState);
   form.addEventListener("focusout",()=>{setTimeout(syncTypingState,0)});
   form.addEventListener("input",()=>{submitted=false;});
-  addEventListener("scroll",()=>{
-    const currentY=window.scrollY;
-    const goingDown=currentY>lastY;
-    lastY=currentY;
-    if(form.contains(document.activeElement))return;
-    if(correcting||!goingDown)return;
-    const missing=unanswered();
-    if(!missing.length)return;
-    if(funSection.getBoundingClientRect().top<innerHeight*.7&&rsvpSection.getBoundingClientRect().top<innerHeight){
-      correcting=true;
-      bounce(missing);
-      funSection.scrollIntoView({behavior:reduce?"auto":"smooth",block:"start"});
-      setTimeout(()=>{correcting=false},550);
-    }
-  },{passive:true});
-  syncNote();
+  syncGate();
   window.validateFunQuestions=validate;
-  window.markRsvpSubmitted=()=>{submitted=true;syncNote();};
+  window.markRsvpSubmitted=()=>{submitted=true;syncGate();};
 })();
 
 $("form").addEventListener("submit",e=>{
