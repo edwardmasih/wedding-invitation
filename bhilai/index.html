@@ -26,12 +26,13 @@ body{display:flex;justify-content:center;min-height:100vh;background:
 @media(min-width:768px){.phone-shell{margin:24px 0;border-radius:28px;overflow:hidden}}
 /* cover */
 body.locked{overflow:hidden;position:fixed;width:100%;height:100%}
-#cover{touch-action:none;overscroll-behavior:contain;position:fixed;inset:0;z-index:10;background:#f8f4eb url("./static/background_tap_to_open.png") center/cover no-repeat;color:#2b3a30;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;cursor:pointer;transition:transform 1.8s cubic-bezier(.22,.7,.2,1),opacity 1.8s ease}
+#cover{touch-action:none;overscroll-behavior:contain;position:fixed;inset:0;z-index:10;background:#f8f4eb url("./static/background_tap_to_open.png") center/cover no-repeat;color:#2b3a30;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;cursor:default;transition:transform 1.8s cubic-bezier(.22,.7,.2,1),opacity 1.8s ease}
 #cover.open{transform:translateY(-100%);opacity:0;pointer-events:none}
 #cover .cover-arc{width:min(86vw,350px);height:auto;display:block;margin-bottom:-52px;overflow:visible}
 #cover .cover-arc text{font:400 1.8rem "Cormorant Garamond",serif;fill:currentColor;letter-spacing:.04em}
 #cover .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-#cover .seal{width:140px;height:140px;background:url("./static/stamp-transparent.png") center/contain no-repeat;display:block;box-shadow:none;transform:translateY(-120px)}
+#cover .seal{width:140px;height:140px;background:url("./static/stamp-transparent.png") center/contain no-repeat;display:block;box-shadow:none;transform:translateY(-120px);cursor:pointer}
+#cover .open-trigger{cursor:pointer}
 #cover h1{font-size:2.4rem;padding:0 20px}
 /* hero */
 #hero{min-height:100vh;min-height:100svh;display:flex;flex-direction:column;justify-content:center;align-items:center;max-width:none;background:url("./static/background_first.png") center/cover no-repeat}
@@ -92,18 +93,18 @@ body.locked{overflow:hidden;position:fixed;width:100%;height:100%}
 .schedule-kicker{font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(43,58,48,.64)}
 .schedule-modal{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(15,24,19,.55);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
 .schedule-modal.open{display:flex}
-.schedule-modal-panel{position:relative;width:min(100%,420px);max-height:min(88vh,820px);overflow:auto;border-radius:30px;background:#fffaf1;box-shadow:0 28px 90px rgba(0,0,0,.28);transform-origin:center;opacity:0}
-.schedule-modal-close{width:100%;margin-top:18px;border:0;border-radius:999px;padding:12px 18px;background:rgba(18,28,22,.86);color:#fffaf1;font:inherit;cursor:pointer;text-align:center}
+.schedule-modal-panel{position:relative;width:min(100%,420px);max-height:min(88vh,820px);overflow:auto;border-radius:30px;background:var(--modal-panel-bg,#fffaf1);box-shadow:0 28px 90px rgba(0,0,0,.28);transform-origin:center;opacity:0}
+.schedule-modal-close{width:100%;margin-top:18px;border:0;border-radius:999px;padding:12px 18px;background:var(--modal-button-bg,rgba(18,28,22,.86));color:var(--modal-button-text,#fffaf1);font:inherit;cursor:pointer;text-align:center}
 .schedule-modal-content{padding:24px 22px 26px;text-align:left}
 .schedule-meta{display:grid;gap:14px}
-.schedule-meta-block{padding:14px 16px;border-radius:18px;background:#f6efe1}
+.schedule-meta-block{padding:14px 16px;border-radius:18px;background:var(--modal-block-bg,#f6efe1)}
 .schedule-map-link{display:block;color:inherit;text-decoration:none;transition:transform .25s ease,box-shadow .25s ease}
 .schedule-map-link:hover,.schedule-map-link:focus-visible{transform:translateY(-2px);box-shadow:0 12px 28px rgba(43,58,48,.12);outline:none}
 .schedule-map-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px}
 .schedule-map-icon{width:24px;height:24px;flex:0 0 auto}
-.schedule-meta-label{display:block;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(43,58,48,.55);margin-bottom:6px}
-.schedule-meta-value{font-family:"Cormorant Garamond",serif;font-size:1.35rem;color:var(--green)}
-.schedule-meta-copy{font-size:.96rem;color:rgba(43,58,48,.84)}
+.schedule-meta-label{display:block;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--modal-label-color,rgba(43,58,48,.55));margin-bottom:6px}
+.schedule-meta-value{font-family:"Cormorant Garamond",serif;font-size:1.35rem;color:var(--modal-value-color,var(--green))}
+.schedule-meta-copy{font-size:.96rem;color:var(--modal-copy-color,rgba(43,58,48,.84))}
 .schedule-modal-panel.animating{transition:transform .45s cubic-bezier(.22,.8,.2,1),opacity .35s ease}
 @media(max-width:767px){.schedule-grid{--card-gap:14px}}
 /* glimpse */
@@ -160,7 +161,7 @@ body.locked{overflow:hidden;position:fixed;width:100%;height:100%}
 .card{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:26px 20px}
 .card h3{font-size:1.5rem;color:var(--gold);margin-bottom:8px}
 /* rsvp */
-#rsvp{max-width:none;background:linear-gradient(180deg,#eef6ff 0%,#dceafb 100%)}
+#rsvp{position:relative;overflow:hidden;max-width:none;background:linear-gradient(180deg,#eef6ff 0%,#dceafb 100%)}
 #rsvp h2{color:#1e3f73}
 #rsvp p,#rsvp label,#rsvp .radio label,#rsvp .rsvp-question,#rsvp #done{color:#274873}
 #rsvp .rsvp-question{margin:0;font-size:.9rem;line-height:1.6;color:#274873;font-family:inherit;font-weight:inherit}
@@ -171,7 +172,16 @@ input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px soli
 .radio{display:flex;gap:18px;flex-wrap:wrap}.radio label{display:flex;gap:6px;align-items:center}.radio input{width:auto}
 #rsvp .btn{border-color:#1e3f73;background:#1e3f73;color:#f4f8ff}
 #rsvp .btn:hover,#rsvp .btn:focus-visible{background:#153158;color:#f4f8ff}
+#rsvp .btn.loading{font-size:0;pointer-events:none;opacity:.92}
+#rsvp .btn.loading::after{content:"\2665";font-size:1.55rem;line-height:1;color:inherit;display:inline-block;animation:rsvp-heartbeat .9s ease-in-out infinite}
 #done{display:none;margin-top:22px;padding:20px;border:1px solid var(--gold);border-radius:6px}
+#rsvp.success-state>h2,#rsvp.success-state>#rsvpIntro,#rsvp.success-state>form,#rsvp.success-state>#done{opacity:0;pointer-events:none}
+.rsvp-success{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:40px 24px;opacity:0;pointer-events:none;transition:opacity .35s ease;text-align:center}
+#rsvp.success-state .rsvp-success{opacity:1}
+.rsvp-success-heart{font-size:4.8rem;line-height:1;color:#1e3f73;text-shadow:0 0 12px rgba(30,63,115,.24),0 0 34px rgba(30,63,115,.18);animation:rsvp-heartbeat .9s ease-in-out infinite,heart-shine 2s linear infinite}
+.rsvp-success-message{margin:0;font-family:"Cormorant Garamond",serif;font-size:2rem;line-height:1.1;color:#1e3f73}
+@keyframes rsvp-heartbeat{0%,100%{transform:scale(1)}20%{transform:scale(1.14)}40%{transform:scale(.96)}60%{transform:scale(1.18)}80%{transform:scale(1)}}
+@keyframes heart-shine{0%,100%{filter:brightness(1)}50%{filter:brightness(1.18)}}
 footer{padding:60px 24px;background:linear-gradient(rgba(68,114,171,.74),rgba(30,63,115,.84)),url("./static/last_bg.png") center/cover no-repeat;color:#f4f8ff}
 footer .footer-photo{display:block;width:min(100%,260px);margin:0 auto 24px;border-radius:28px;box-shadow:0 24px 48px rgba(18,46,84,.28)}
 footer h2{color:#f4f8ff;margin-bottom:6px}
@@ -195,9 +205,9 @@ footer h2{color:#f4f8ff;margin-bottom:6px}
         <textPath href="#coverArcPath" startOffset="50%">The Eternal Chapter</textPath>
       </text>
     </svg>
-    <div class="seal" id="c-mono" aria-hidden="true"></div>
+    <div class="seal open-trigger" id="c-mono" aria-hidden="true" data-open-invite="true"></div>
     <h1 id="c-title" class="sr-only">The Eternal Chapter</h1>
-    <div>Tap to open</div>
+    <div class="open-trigger" data-open-invite="true">Tap to open</div>
   </div>
 
   <button id="music" aria-label="Toggle music">♪</button>
@@ -345,6 +355,10 @@ footer h2{color:#f4f8ff;margin-bottom:6px}
       <button class="btn" type="submit">Submit RSVP</button>
     </form>
     <div id="done"></div>
+    <div class="rsvp-success" aria-hidden="true">
+      <div class="rsvp-success-heart">&#10084;</div>
+      <p class="rsvp-success-message">Thank you</p>
+    </div>
   </section>
 
   <footer>
@@ -366,11 +380,11 @@ const CFG = {
   quote: "Two Souls · One Destiny",
   verse: '"So they are no longer two, but one flesh. Therefore what God has joined together, let no one separate."<span class="verse-ref">Mark 10:8-9</span>',
   celebrations: [
-    { name: "Haldi", date: "23.11.26", time: "10am", address: "Mennonite Church Bhilai, Hospital Sector, Bhilai, Chhattisgarh 490009", mapLink: "https://maps.app.goo.gl/th8nvbmoRDPJPR2e9", photo: "./static/haldi.png" },
-    { name: "Prayer Meeting", date: "23.11.26", time: "7pm", address: "Mennonite Church Bhilai, Hospital Sector, Bhilai, Chhattisgarh 490009", mapLink: "https://maps.app.goo.gl/th8nvbmoRDPJPR2e9", photo: "./static/prayer_meeting.png" },
-    { name: "Wedding", date: "25.11.26", time: "4:30pm", address: "Cuttack Odia Baptist Church, Odisha", mapLink: "https://maps.app.goo.gl/m2TNUK81Kg5a2ZfX9", photo: "./static/wedding.png" },
-    { name: "Wedding Dinner", date: "25.11.26", time: "8:30pm onwards", address: "UTS Campus, Mission Road, Buxibazar, Cuttack, Odisha 753001", mapLink: "https://maps.app.goo.gl/LcyJcW472bVHNSvU9", photo: "./static/wedding-dinner.png" },
-    { name: "Reception", date: "27.11.26", time: "7pm onwards", address: "Officers' Association B.S.P.- Pragati Bhawan, Civic Center, Sector 6, Bhilai, Chhattisgarh 490006", mapLink: "https://maps.app.goo.gl/5GL6YX9SFwK1peZL8", photo: "./static/reception.png" }
+    { name: "Haldi", date: "23.11.26", time: "10am", address: "Mennonite Church Bhilai, Hospital Sector, Bhilai, Chhattisgarh 490009", mapLink: "https://maps.app.goo.gl/th8nvbmoRDPJPR2e9", photo: "./static/haldi.png", modalTheme: { panelBg: "#f7eed0", blockBg: "#f2e7bf", labelColor: "rgba(122,93,24,.62)", valueColor: "#8a6a14", copyColor: "#70571a", buttonBg: "#b68614", buttonText: "#fffaf0" } },
+    { name: "Prayer Meeting", date: "23.11.26", time: "7pm", address: "Mennonite Church Bhilai, Hospital Sector, Bhilai, Chhattisgarh 490009", mapLink: "https://maps.app.goo.gl/th8nvbmoRDPJPR2e9", photo: "./static/prayer_meeting.png", modalTheme: { panelBg: "#e6f0e9", blockBg: "#d7e7dc", labelColor: "rgba(33,88,72,.58)", valueColor: "#1d5b4c", copyColor: "#285d52", buttonBg: "#1d5b4c", buttonText: "#f6fbf8" } },
+    { name: "Wedding", date: "25.11.26", time: "4:30pm", address: "Cuttack Odia Baptist Church, Odisha", mapLink: "https://maps.app.goo.gl/m2TNUK81Kg5a2ZfX9", photo: "./static/wedding.png", modalTheme: { panelBg: "#f7efe3", blockBg: "#efe2ce", labelColor: "rgba(132,99,56,.58)", valueColor: "#87663a", copyColor: "#6d5940", buttonBg: "#a88353", buttonText: "#fffaf2" } },
+    { name: "Wedding Dinner", date: "25.11.26", time: "8:30pm onwards", address: "UTS Campus, Mission Road, Buxibazar, Cuttack, Odisha 753001", mapLink: "https://maps.app.goo.gl/LcyJcW472bVHNSvU9", photo: "./static/wedding-dinner.png", modalTheme: { panelBg: "#fdeff4", blockBg: "#f9dde9", labelColor: "rgba(161,86,120,.56)", valueColor: "#a55177", copyColor: "#87596c", buttonBg: "#b55c84", buttonText: "#fff8fb" } },
+    { name: "Reception", date: "27.11.26", time: "7pm onwards", address: "Officers' Association B.S.P.- Pragati Bhawan, Civic Center, Sector 6, Bhilai, Chhattisgarh 490006", mapLink: "https://maps.app.goo.gl/5GL6YX9SFwK1peZL8", photo: "./static/reception.png", modalTheme: { panelBg: "#f7e4e3", blockBg: "#f0d0cd", labelColor: "rgba(138,52,47,.58)", valueColor: "#9b3e3e", copyColor: "#7d4a4a", buttonBg: "#b54949", buttonText: "#fff8f7" } }
   ],
   galleryPhotos: Array.from({ length: 10 }, (_, index) => `../photos/${index + 1}.png`),
   rsvpIntro: "Because every great wedding needs its favourite people.",
@@ -395,14 +409,23 @@ $("foot").textContent="Selina & Edward";
   const modal=$("scheduleModal"),panel=$("scheduleModalPanel"),back=$("scheduleBack");
   let activeCard=null,closing=false;
   function fill(index){
-    $("scheduleModalDate").textContent=CFG.celebrations[index].date;
-    $("scheduleModalTime").textContent=CFG.celebrations[index].time;
-    $("scheduleModalAddress").textContent=CFG.celebrations[index].address;
-    $("scheduleModalAddressLink").href=CFG.celebrations[index].mapLink;
+    const event=CFG.celebrations[index];
+    $("scheduleModalDate").textContent=event.date;
+    $("scheduleModalTime").textContent=event.time;
+    $("scheduleModalAddress").textContent=event.address;
+    $("scheduleModalAddressLink").href=event.mapLink;
     const dressCodeBlock=$("scheduleDressCodeBlock");
-    const dressCode=CFG.celebrations[index].dressCode;
+    const dressCode=event.dressCode;
     dressCodeBlock.hidden=!dressCode;
     $("scheduleModalDressCode").textContent=dressCode||"";
+    const theme=event.modalTheme||{};
+    panel.style.setProperty("--modal-panel-bg",theme.panelBg||"#fffaf1");
+    panel.style.setProperty("--modal-block-bg",theme.blockBg||"#f6efe1");
+    panel.style.setProperty("--modal-label-color",theme.labelColor||"rgba(43,58,48,.55)");
+    panel.style.setProperty("--modal-value-color",theme.valueColor||"var(--green)");
+    panel.style.setProperty("--modal-copy-color",theme.copyColor||"rgba(43,58,48,.84)");
+    panel.style.setProperty("--modal-button-bg",theme.buttonBg||"rgba(18,28,22,.86)");
+    panel.style.setProperty("--modal-button-text",theme.buttonText||"#fffaf1");
   }
   function animateFromCard(card,reverse){
     const from=card.getBoundingClientRect();
@@ -639,7 +662,7 @@ function openInv(){
   $("cover").classList.add("open");document.body.classList.remove("locked");window.scrollTo(0,0);
   if(CFG.musicUrl){audio.src=CFG.musicUrl;audio.play().catch(()=>{});mb.style.display="block"}
 }
-$("cover").addEventListener("click",openInv);
+$("cover").addEventListener("click",e=>{if(e.target.closest("[data-open-invite]"))openInv()});
 $("cover").addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();openInv()}});
 mb.addEventListener("click",()=>audio.paused?audio.play():audio.pause());
 
@@ -723,8 +746,15 @@ const funSection=$("fun"),rsvpSection=$("rsvp");
 (function(){
   const reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;
   const questions=[...document.querySelectorAll(".fun-question")];
+  const form=$("form");
+  const note=document.querySelector(".fun-note");
+  let submitted=false;
   let lastY=window.scrollY,correcting=false;
-  const unanswered=()=>questions.filter(card=>!document.querySelector(`input[name="${card.dataset.name}"]:checked`));
+  const unanswered=()=>submitted?[]:questions.filter(card=>!document.querySelector(`input[name="${card.dataset.name}"]:checked`));
+  function syncNote(){
+    if(!note)return;
+    note.style.display=unanswered().length?"block":"none";
+  }
   function bounce(cards=unanswered()){
     cards.forEach(card=>{
       card.classList.remove("missing");
@@ -733,13 +763,15 @@ const funSection=$("fun"),rsvpSection=$("rsvp");
     });
   }
   function validate(){
+    if(submitted)return true;
     const missing=unanswered();
     if(!missing.length)return true;
     bounce(missing);
     missing[0].scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"});
     return false;
   }
-  questions.forEach(card=>card.addEventListener("change",()=>card.classList.remove("missing")));
+  questions.forEach(card=>card.addEventListener("change",()=>{submitted=false;card.classList.remove("missing");syncNote()}));
+  form.addEventListener("input",()=>{submitted=false;});
   addEventListener("scroll",()=>{
     const currentY=window.scrollY;
     const goingDown=currentY>lastY;
@@ -754,7 +786,9 @@ const funSection=$("fun"),rsvpSection=$("rsvp");
       setTimeout(()=>{correcting=false},550);
     }
   },{passive:true});
+  syncNote();
   window.validateFunQuestions=validate;
+  window.markRsvpSubmitted=()=>{submitted=true;syncNote();};
 })();
 
 $("form").addEventListener("submit",e=>{
@@ -764,6 +798,10 @@ $("form").addEventListener("submit",e=>{
 
 async function submitRsvp(e){
   if(!window.validateFunQuestions())return;
+  const form=e.target;
+  const section=$("rsvp");
+  const submitBtn=form.querySelector('button[type="submit"]');
+  const nextPage=document.querySelector("footer");
   const f=new FormData(e.target);
   const answers=[...document.querySelectorAll(".fun-question")].map(card=>({
     question: card.dataset.question,
@@ -778,9 +816,12 @@ async function submitRsvp(e){
   const funAnswers=answers.map(item=>`${item.question}: ${item.answer}`).join("\n");
   const msg=`RSVP – ${CFG.title}\nName: ${payload.name}\nAttending: ${payload.attending}\nNote for the couple: ${payload.note||"-"}\n\nFun Questions\n${funAnswers}`;
   const out=$("done");
-  out.style.display="block";
-  out.textContent="Submitting your RSVP...";
-  out.replaceChildren(document.createTextNode("Submitting your RSVP..."));
+  const note=document.querySelector(".fun-note");
+  const defaultLabel=submitBtn.textContent;
+  out.style.display="none";
+  out.replaceChildren();
+  submitBtn.disabled=true;
+  submitBtn.classList.add("loading");
   if(CFG.googleScriptUrl){
     try{
       await fetch(CFG.googleScriptUrl,{
@@ -789,14 +830,31 @@ async function submitRsvp(e){
         headers:{"Content-Type":"text/plain;charset=utf-8"},
         body:JSON.stringify(payload)
       });
-      out.textContent="Thank you! Your RSVP has been submitted.";
-      e.target.reset();
+      if(window.markRsvpSubmitted)window.markRsvpSubmitted();
+      form.reset();
       document.querySelectorAll(".fun-question").forEach(card=>card.classList.remove("missing"));
+      if(note)note.style.display="none";
+      if(funSection)funSection.style.display="none";
+      submitBtn.disabled=false;
+      submitBtn.classList.remove("loading");
+      submitBtn.textContent=defaultLabel;
+      section.classList.add("success-state");
+      const success=section.querySelector(".rsvp-success");
+      if(success)success.setAttribute("aria-hidden","false");
+      setTimeout(()=>{if(nextPage)nextPage.scrollIntoView({behavior:"smooth",block:"start"});},2000);
       return;
     }catch(err){
+      submitBtn.disabled=false;
+      submitBtn.classList.remove("loading");
+      submitBtn.textContent=defaultLabel;
+      out.style.display="block";
       out.textContent="We couldn't reach the RSVP sheet right now. Use the backup option below.";
     }
   }else{
+    submitBtn.disabled=false;
+    submitBtn.classList.remove("loading");
+    submitBtn.textContent=defaultLabel;
+    out.style.display="block";
     out.textContent="Google Sheets is not connected yet. Use the backup option below.";
   }
   let link="";
